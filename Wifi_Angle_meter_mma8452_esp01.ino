@@ -215,8 +215,6 @@ boolean captivePortal() {
  */
 /** Return the current rotation value along X axis - in degrees */
 double read_angle() {                             
-
-  // unsigned long preFunction = micros();
   float x, y, z;
   float x_accum = 0, y_accum = 0, z_accum = 0;
   for (int nn = 0;  nn < NUM_SAMPLES; nn++) {
