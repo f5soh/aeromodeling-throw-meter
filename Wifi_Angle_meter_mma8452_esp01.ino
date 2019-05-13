@@ -124,7 +124,7 @@ void loop() {
 
   angle_web = x_rot;
   debat_web = debat;
-
+  
   // DNS
   dnsServer.processNextRequest();
   // Web server
@@ -139,7 +139,7 @@ void handleRoot() {
 
 /** Send values to page */
 void handleValues() {
-  server.send(200, "text/plane", String(angle_web,2) + ":" + String(int(debat_web)) + ":" + String(int(corde)) );
+  server.send(200, "text/plane", String(angle_web,2) + ":" + String(int(debat_web)) + ":" + String(int(corde)));
 }
 
 /** Receive values from page */
@@ -174,6 +174,8 @@ void handleData() {
  } else if (corde > 200) {
     corde = 200;
  }
+ // send new values after setting change
+ handleValues(); 
 }
 
 void handleNotFound() {
