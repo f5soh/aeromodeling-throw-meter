@@ -14,17 +14,28 @@ font-size : 1em;
 border-radius : 20px 20px 0px 0px;
 }
 #settings {
-padding : 6px 15px;
+padding : 10px 15px;
 border : black solid 2px;
 background-color : #f4e969;
 }
+#buttons {
+display : inline-block;
+vertical-align: top;
+}
+#chord {
+display : inline-block;
+}
+.values {
+display : inline-block;
+white-space : nowrap;
+}
 #measurements {
-padding : 6px 15px;
+padding : 10px 15px;
 border : black solid 2px;
 background-color : #6adbe8;
 border-radius :  0px 0px 20px 20px;
 }
-#CordeValue, #AngleValue, #DebatValue {
+#ChordValue, #AngleValue, #ThrowValue, #MinThrowValue, #MaxThrowValue {
 text-align : right;
 display : inline-block;
 font : bold 2em sans-serif;
@@ -32,23 +43,27 @@ margin : 4px 4px;
 border-radius : 8px;
 padding : 6px 10px;
 background-color : #cdf8fd;
-width : 150px;
+width : 140px;
 }
-#CordeValue {
-width : 75px;
+#ChordValue, #ThrowValue, #MinThrowValue, #MaxThrowValue {
+width : 100px;
 }
-.label {
+
+.label, .label2 {
 display : inline-block;
 white-space : nowrap;
 text-align : right;
 font-size : 1.5em;
-width : 140px;
+width : 80px;
+}
+.label2 {
+width : 60px;
 }
 .unit {
 display : inline-block;
 text-align : left;
 font-size : 1.5em;
-width : 126px;
+width : 50px;
 }
 .button {
 border : none;
@@ -58,30 +73,42 @@ text-align : center;
 text-decoration : none;
 white-space : nowrap;
 display : inline-block;
-font-size : 1em;
+font-size : 1.3em;
 margin : 6px 2px;
 border-radius : 10px;
 cursor : pointer;
 }
-.button1 { background-color: #4caf50; width:73px;}
-.button2 { background-color: #4c86af; width:110px;}
+.button1 { background-color: #4caf50; width:82px;}
+.button2 { background-color: #4c86af; width:120px;}
 </style>
 <title>ESP Angle meter</title>
 </head><body>
 <div id="header"><h1>ESP Angle meter</h1></div>
 <div id="settings">
+<div id="chord">
 <button class="button button1" type="button" onclick="sendData(-10)">-10</button>
 <button class="button button1" type="button" onclick="sendData(-1)">-1</button>
 <button class="button button1" type="button" onclick="sendData(1)">+1</button>
 <button class="button button1" type="button" onclick="sendData(10)">+10</button>
-<button class="button button2" type="button" onclick="sendData(302)">Load</button>
-<button class="button button2" type="button" onclick="sendData(301)">Save</button>
 <br>
-<span class="label">Corde :</span><span id="CordeValue">0</span><span class="unit">mm</span>
+<span class="label">Chord:</span><span id="ChordValue">50</span><span class="unit">mm</span>
+</div>
+<div id="buttons">
+<button class="button button2" type="button" onclick="sendData(302)">Load</button>
+<button class="button button2" type="button" onclick="sendData(301)">Save</button><br>
+<button class="button button2" type="button" onclick="sendData(0)">Init Angle</button>
+<button class="button button2" type="button" onclick="sendData(303)">Min/Max</button>
+</div>
 </div>
 <div id="measurements">
-<span class="label">Angle :</span><span id="AngleValue">0</span><span class="unit">degrés</span><button class="button button2" type="button" onclick="sendData(0)">Init Angle</button><br>
-<span class="label">Débat. :</span><span id="DebatValue">0</span><span class="unit">mm</span>
+<div class="values">
+<span class="label">Angle:</span><span id="AngleValue">-180.00</span><span class="unit">deg</span><br>
+<span class="label">Throw:</span><span id="ThrowValue">100</span><span class="unit">mm</span>
+</div>
+<div class="values">
+<span class="label2">Max:</span><span id="MaxThrowValue">100</span><span class="unit">mm</span><br>
+<span class="label2">Min:</span><span id="MinThrowValue">-100</span><span class="unit">mm</span>
+</div>
 </div>
 <script>
 function sendData(value) {
@@ -102,9 +129,11 @@ xhttp.onreadystatechange = function() {
 if (this.readyState == 4 && this.status == 200) {
 var str_in = this.responseText;
 var words = str_in.split(':');
-document.getElementById("AngleValue").innerHTML = words[0];
-document.getElementById("DebatValue").innerHTML = words[1];
-document.getElementById("CordeValue").innerHTML = words[2];
+document.getElementById("ChordValue").innerHTML = words[0];
+document.getElementById("AngleValue").innerHTML = words[1];
+document.getElementById("ThrowValue").innerHTML = words[2];
+document.getElementById("MinThrowValue").innerHTML = words[3];
+document.getElementById("MaxThrowValue").innerHTML = words[4];
 }
 };
 xhttp.open("GET", "readData", true);

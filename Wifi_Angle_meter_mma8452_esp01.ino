@@ -49,7 +49,7 @@ float outputPower = 0;
 
 MMA8452 mma;
 double ref_angle, last_angle;
-float angle_web, debat_web;
+float angle_web, throw_web, minthrow_web=0, maxthrow_web=0;
 int corde = 50;
 
 #define NUM_SAMPLES  150
@@ -123,7 +123,13 @@ void loop() {
   debat = sqrt(2 * sq(corde) - (2 * sq(corde) * cos(angle_rad)));         // throw computation in same units as chord
 
   angle_web = x_rot;
-  debat_web = debat;
+  throw_web = (angle_web < 0) ? debat * -1 : debat;
+  
+  if (throw_web > maxthrow_web) {
+    maxthrow_web = throw_web;
+  } else if(throw_web < minthrow_web) {
+    minthrow_web = throw_web; 
+  }  
   
   // DNS
   dnsServer.processNextRequest();
@@ -139,7 +145,11 @@ void handleRoot() {
 
 /** Send values to page */
 void handleValues() {
-  server.send(200, "text/plane", String(angle_web,2) + ":" + String(int(debat_web)) + ":" + String(int(corde)));
+  server.send(200, "text/plane", String(int(corde)) + ":" + \
+                                 String(angle_web, 2) + ":" + \ 
+                                 String(throw_web, 1) + ":" + \
+                                 String(minthrow_web, 1) + ":" + \
+                                 String(maxthrow_web, 1));
 }
 
 /** Receive values from page */
@@ -166,6 +176,10 @@ void handleData() {
  }
  if(t_state == "302") {
     loadCorde();
+ }
+ if(t_state == "303") {
+    minthrow_web = 0;
+    maxthrow_web = 0;    
  }
 
  // Keep corde value between limits
