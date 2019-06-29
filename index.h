@@ -25,6 +25,7 @@ vertical-align: top;
 #chord {
 display : inline-block;
 }
+
 .values {
 display : inline-block;
 white-space : nowrap;
@@ -35,7 +36,7 @@ border : black solid 2px;
 background-color : #6adbe8;
 border-radius :  0px 0px 20px 20px;
 }
-#ChordValue, #AngleValue, #ThrowValue, #MinThrowValue, #MaxThrowValue {
+#ChordValue, #AngleValue, #ThrowValue, #MinThrowValue, #MaxThrowValue, #AngleValue2, #ThrowValue2, #MinThrowValue2, #MaxThrowValue2 {
 text-align : right;
 display : inline-block;
 font : bold 2em sans-serif;
@@ -45,7 +46,7 @@ padding : 6px 10px;
 background-color : #cdf8fd;
 width : 140px;
 }
-#ChordValue, #ThrowValue, #MinThrowValue, #MaxThrowValue {
+#ChordValue, #ThrowValue, #MinThrowValue, #MaxThrowValue, #ThrowValue2, #MinThrowValue2, #MaxThrowValue2 {
 width : 100px;
 }
 
@@ -54,10 +55,10 @@ display : inline-block;
 white-space : nowrap;
 text-align : right;
 font-size : 1.5em;
-width : 80px;
+width : 90px;
 }
 .label2 {
-width : 60px;
+width : 90px;
 }
 .unit {
 display : inline-block;
@@ -96,11 +97,12 @@ cursor : pointer;
 <div id="buttons">
 <button class="button button2" type="button" onclick="sendData(302)">Load</button>
 <button class="button button2" type="button" onclick="sendData(301)">Save</button><br>
-<button class="button button2" type="button" onclick="sendData(0)">Init Angle</button>
+<button class="button button2" type="button" onclick="sendData(304)">Init Angle</button>
 <button class="button button2" type="button" onclick="sendData(303)">Min/Max</button>
 </div>
 </div>
 <div id="measurements">
+<div id="master">
 <div class="values">
 <span class="label">Angle:</span><span id="AngleValue">-180.00</span><span class="unit">deg</span><br>
 <span class="label">Throw:</span><span id="ThrowValue">100</span><span class="unit">mm</span>
@@ -110,23 +112,35 @@ cursor : pointer;
 <span class="label2">Min:</span><span id="MinThrowValue">-100</span><span class="unit">mm</span>
 </div>
 </div>
+<div id="slave">
+<div class="values">
+<span class="label">Angle2:</span><span id="AngleValue2">-180.00</span><span class="unit">deg</span><br>
+<span class="label">Throw2:</span><span id="ThrowValue2">100</span><span class="unit">mm</span>
+</div>
+<div class="values">
+<span class="label2">Max2:</span><span id="MaxThrowValue2">100</span><span class="unit">mm</span><br>
+<span class="label2">Min2:</span><span id="MinThrowValue2">-100</span><span class="unit">mm</span>
+</div>
+</div>
+</div>
 <script>
 function sendData(value) {
-var xhttp = new XMLHttpRequest();
-xhttp.open("GET", "setData?Datastate="+value, true);
-xhttp.send();
+const xhttpcmd = new XMLHttpRequest();
+xhttpcmd.open("GET", "setData?Datastate="+value, true);
+xhttpcmd.send(null);
 getData();
 }
 
 setInterval(function() {
 // Call a function repetatively
 getData();
-}, 300); //300ms update rate
+}, 500); //500ms update rate
 
 function getData() {
-var xhttp = new XMLHttpRequest();
-xhttp.onreadystatechange = function() {
-if (this.readyState == 4 && this.status == 200) {
+this.slave_found = "undefined";
+const xhttp = new XMLHttpRequest();
+xhttp.onreadystatechange = function(event) {
+if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
 var str_in = this.responseText;
 var words = str_in.split(':');
 document.getElementById("ChordValue").innerHTML = words[0];
@@ -134,10 +148,22 @@ document.getElementById("AngleValue").innerHTML = words[1];
 document.getElementById("ThrowValue").innerHTML = words[2];
 document.getElementById("MinThrowValue").innerHTML = words[3];
 document.getElementById("MaxThrowValue").innerHTML = words[4];
+// Slave device
+document.getElementById("AngleValue2").innerHTML = words[5];
+document.getElementById("ThrowValue2").innerHTML = words[6];
+document.getElementById("MinThrowValue2").innerHTML = words[7];
+document.getElementById("MaxThrowValue2").innerHTML = words[8];
+if ((words[9] != "1") && (slave_found != "false")) {
+  slave_found = "false";
+  document.getElementById("slave").style.display = "none";
+} else if ((words[9] != "0")) {
+  slave_found = "true";
+  document.getElementById("slave").style.display = "block"; 
+}
 }
 };
 xhttp.open("GET", "readData", true);
-xhttp.send();
+xhttp.send(null);
 }
 </script>
 </body></html>
