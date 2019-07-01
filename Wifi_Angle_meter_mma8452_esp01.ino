@@ -56,8 +56,8 @@ String slaveDeviceIP = "";
 String data;
 unsigned long lastSent;
 unsigned long lastReceived;
-unsigned long sendEvery_ms = 400;
-unsigned long timeOut_ms = 3000;
+unsigned long sendEvery_ms = 300;
+unsigned long timeOut_ms = 1000;
 
 MMA8452 mma;
 double ref_angle, last_angle;
@@ -65,7 +65,7 @@ float angle_web, throw_web, minthrow_web = 0, maxthrow_web = 0;
 String str_angle2_web = "0", str_throw2_web = "0", str_minthrow2_web = "0", str_maxthrow2_web = "0", str_dual = "0";
 int corde = 50;
 
-#define NUM_SAMPLES 150
+#define NUM_SAMPLES 30
 #define ALPHA       0.7
 
 /**
@@ -167,37 +167,16 @@ void setup()
  */
 void loop()
 {
-  double x_rot = 0;
-  float angle_rad = 0, debat = 0;
 
-  // compute angle variation vs. reference angle, find shortest way
-  x_rot = fmod((ref_angle - read_angle()) + 180, 360);
-  if (x_rot < 0) {
-    x_rot += 180;
-  } else {
-    x_rot -= 180;
-  }
-  // Serial.println("Ref:" + String(ref_angle,9) + " Angle:" + String(x_rot, 9));
-
-  // angle filtering
-  x_rot      = (last_angle * ALPHA) + (x_rot * (1 - ALPHA));
-  last_angle = x_rot;
-
-  angle_rad  = x_rot / 180 * M_PI;
-  debat      = sqrt(2 * sq(corde) - (2 * sq(corde) * cos(angle_rad)));         // throw computation in same units as chord
-
-  angle_web  = x_rot;
-  throw_web  = (angle_web < 0) ? debat * -1 : debat;
-
-  if (throw_web > maxthrow_web) {
-    maxthrow_web = throw_web;
-  } else if (throw_web < minthrow_web) {
-    minthrow_web = throw_web;
-  }
-
+  // Do measurements, result is filtered
+  // Take around 11ms per 30 samples
+  float angle = read_angle();
+  compute_values(angle);
+  
   if (is_master) {
     // DNS
     dnsServer.processNextRequest();
+    
     // Check if slave still here
     if ((millis() - lastReceived) > timeOut_ms) {
       str_dual = "0";
@@ -205,6 +184,7 @@ void loop()
       str_dual = "1";
     }
   } else {
+    // Slave send data to master
     if ((millis() - lastSent) > sendEvery_ms) {
       prepareSlaveData();
       sendSlaveData();
@@ -420,6 +400,36 @@ double read_angle()
   z = z_accum / NUM_SAMPLES;
 
   return atan2(y, z) / M_PI * 180;
+}
+
+void compute_values(float angle) {
+  double x_rot = 0;
+  float angle_rad = 0, debat = 0;
+
+  // compute angle variation vs. reference angle, find shortest way
+  x_rot = fmod((ref_angle - angle) + 180, 360);
+  if (x_rot < 0) {
+    x_rot += 180;
+  } else {
+    x_rot -= 180;
+  }
+  // Serial.println("Ref:" + String(ref_angle,9) + " Angle:" + String(x_rot, 9));
+
+  // angle filtering
+  x_rot      = (last_angle * ALPHA) + (x_rot * (1 - ALPHA));
+  last_angle = x_rot;
+
+  angle_rad  = x_rot / 180 * M_PI;
+  debat      = sqrt(2 * sq(corde) - (2 * sq(corde) * cos(angle_rad)));         // throw computation in same units as chord
+
+  angle_web  = x_rot;
+  throw_web  = (angle_web < 0) ? debat * -1 : debat;
+
+  if (throw_web > maxthrow_web) {
+    maxthrow_web = throw_web;
+  } else if (throw_web < minthrow_web) {
+    minthrow_web = throw_web;
+  }
 }
 
 /** Reset min/max throw values */
