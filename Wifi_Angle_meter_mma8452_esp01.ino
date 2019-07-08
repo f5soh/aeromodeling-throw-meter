@@ -57,13 +57,14 @@ String data;
 unsigned long lastSent;
 unsigned long lastReceived;
 unsigned long sendEvery_ms = 300;
-unsigned long timeOut_ms = 1000;
+unsigned long timeOut_ms = 1500;
 
 MMA8452 mma;
 double ref_angle, last_angle;
 float angle_web, throw_web, minthrow_web = 0, maxthrow_web = 0;
 String str_angle2_web = "0", str_throw2_web = "0", str_minthrow2_web = "0", str_maxthrow2_web = "0", str_dual = "0";
-int corde = 50;
+int corde = 50, min_setting = 0, max_setting = 0;
+bool invert_angle = false;
 
 #define NUM_SAMPLES 30
 #define ALPHA       0.7
@@ -139,11 +140,12 @@ void setup()
     server.on("/setData", handleData); // Receive request from webpage and change settings
     server.on("/setSlaveData", handleSlaveData); // Receive sensor data from slave
     server.on("/readData", handleValues); // Send values to be displayed in webpage (master and slave if any)
+    server.on("/readSettings", handleSettings);
     server.on("/generate_204", handleRoot); // Android captive portal. Maybe not needed. Might be handled by notFound handler.
     server.on("/fwlink", handleRoot); // Microsoft captive portal. Maybe not needed. Might be handled by notFound handler.
     server.onNotFound(handleNotFound);
 
-    loadCorde();
+    loadSettings();
   }
 
   server.begin();
@@ -167,21 +169,21 @@ void setup()
  */
 void loop()
 {
-
   // Do measurements, result is filtered
   // Take around 11ms per 30 samples
   float angle = read_angle();
+
   compute_values(angle);
-  
+
   if (is_master) {
     // DNS
     dnsServer.processNextRequest();
-    
+
     // Check if slave still here
     if ((millis() - lastReceived) > timeOut_ms) {
-      str_dual = "0";
+      str_dual = "0"; // One sensor from master
     } else {
-      str_dual = "1";
+      str_dual = "1"; // Dual sensor
     }
   } else {
     // Slave send data to master
@@ -219,33 +221,53 @@ void handleValues()
               str_dual);
 }
 
+/** Send settings */
+void handleSettings()
+{
+  loadSettings();
+  server.send(200, "text/plane", String(int(corde)) + ":" + \
+              String(int(min_setting)) + ":" + \
+              String(int(max_setting)));
+}
+
 /** Receive values from page */
 void handleData()
 {
   if (!is_master) {
     return;
   }
-  String t_state = server.arg("Datastate");
-  int cmd = t_state.toInt();
+  String str_cmd   = server.arg("cmd");
+  String str_chord = server.arg("chord");
+  String str_min   = server.arg("min");
+  String str_max   = server.arg("max");
+  corde = str_chord.toInt();
+  min_setting = str_min.toInt();
+  max_setting = str_max.toInt();
+
+  // Serial.println("Cmd=" + str_cmd);
+  // Serial.println("Chord=" + str_chord);
+  // Serial.println("Min=" + str_min);
+  // Serial.println("Max=" + str_max);
+
+  int cmd = str_cmd.toInt();
   switch (cmd) {
-  case -10:
-  case -1:
-  case 1:
-  case 10:
-    // Corde change
-    corde += cmd;
-    // Keep corde value between limits
-    if (corde < 0) {
-      corde = 0;
-    } else if (corde > 200) {
-      corde = 200;
-    }
+  case 200:
+    invert_angle = false;
+    break;
+  case 201:
+    invert_angle = true;
+    break;
+  case 202:
+    sendToSlave(corde, 202); // slave: invert_angle = false;
+    break;
+  case 203:
+    sendToSlave(corde, 203); // slave: invert_angle = true;
     break;
   case 301:
-    saveCorde();
+    saveSettings();
     break;
   case 302:
-    loadCorde();
+    loadSettings();
     break;
   case 303:
     reset_minmax();
@@ -305,6 +327,12 @@ void handleMasterData()
   int cmd    = str.toInt();
 
   switch (cmd) {
+  case 202:
+    invert_angle = false;
+    break;
+  case 203:
+    invert_angle = true;
+    break;
   case 303:
     reset_minmax();
     break;
@@ -402,7 +430,8 @@ double read_angle()
   return atan2(y, z) / M_PI * 180;
 }
 
-void compute_values(float angle) {
+void compute_values(float angle)
+{
   double x_rot = 0;
   float angle_rad = 0, debat = 0;
 
@@ -422,7 +451,8 @@ void compute_values(float angle) {
   angle_rad  = x_rot / 180 * M_PI;
   debat      = sqrt(2 * sq(corde) - (2 * sq(corde) * cos(angle_rad)));         // throw computation in same units as chord
 
-  angle_web  = x_rot;
+  // invert angle displayed if needed
+  angle_web  = (invert_angle) ? -x_rot : x_rot;
   throw_web  = (angle_web < 0) ? debat * -1 : debat;
 
   if (throw_web > maxthrow_web) {
@@ -471,28 +501,34 @@ String toStringIp(IPAddress ip)
   return res;
 }
 
-/** Load corde value from EEPROM */
-void loadCorde()
+/** Load settings from EEPROM */
+void loadSettings()
 {
   EEPROM.begin(512);
   EEPROM.get(0, corde);
+  EEPROM.get(0 + sizeof(corde), min_setting);
+  EEPROM.get(0 + sizeof(corde) + sizeof(min_setting), max_setting);
   char ok[2 + 1];
-  EEPROM.get(0 + sizeof(corde), ok);
+  EEPROM.get(0 + sizeof(corde) + sizeof(min_setting) + sizeof(max_setting), ok);
   EEPROM.end();
   if (String(ok) != String("OK")) {
     corde = 50;
+    min_setting = 15;
+    max_setting = 15;
   }
-  Serial.println("Load corde: " + String(corde));
+  Serial.println("Load settings: " + String(corde) + "/" + String(min_setting) + "/" + String(max_setting));
 }
 
-/** Save corde value to EEPROM */
-void saveCorde()
+/** Save settings to EEPROM */
+void saveSettings()
 {
-  Serial.println("Save corde: " + String(corde));
+  Serial.println("Save settings: " + String(corde) + "/" + String(min_setting) + "/" + String(max_setting));
   EEPROM.begin(512);
   EEPROM.put(0, corde);
+  EEPROM.put(0 + sizeof(corde), min_setting);
+  EEPROM.put(0 + sizeof(corde) + sizeof(min_setting), max_setting);
   char ok[2 + 1] = "OK";
-  EEPROM.put(0 + sizeof(corde), ok);
+  EEPROM.put(0 + sizeof(corde) + sizeof(min_setting) + sizeof(max_setting), ok);
   EEPROM.commit();
   EEPROM.end();
 }
