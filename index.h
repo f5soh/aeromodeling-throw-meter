@@ -22,18 +22,18 @@ text-align : left;
 border-width : 2px;
 border-radius : 0 0 20px 20px;
 }
-#settings {
-margin-left : 2px;
-margin-right : 2px;
-padding : 15px;
-border : black solid 2px;
-background-color : #f4e969;
-display : none;
-}
-#measurements {
+#measurements, #settings, #calibrations {
 padding : 10px 0 0 15px;
 border : black solid 2px;
 background-color : #6adbe8;
+}
+#settings {
+background-color : #f4e969;
+display : none;
+}
+#calibrations {
+background-color : #69e969;
+display : none;
 }
 #chord {
 display : inline-block;
@@ -41,7 +41,7 @@ display : inline-block;
 #minmax {
 display : inline-block;
 }
-#ChordValue, #AngleValue, #MinLimitValue, #MaxLimitValue, #ThrowValue, #MinThrowValue, #MaxThrowValue, #AngleValue2, #ThrowValue2, #MinThrowValue2, #MaxThrowValue2, #DiffValue {
+#ChordValue, #AngleValue, #MinLimitValue, #MaxLimitValue, #ThrowValue, #MinThrowValue, #MaxThrowValue, #AngleValue2, #ThrowValue2, #MinThrowValue2, #MaxThrowValue2, #DiffValue, #XValue, #YValue, #ZValue, #XOffsetValue, #YOffsetValue, #ZOffsetValue {
 text-align : right;
 display : inline-block;
 font : bold 2em sans-serif;
@@ -49,10 +49,13 @@ margin : 8px;
 border-radius : 8px;
 padding : 8px 8px;
 background-color : #cdf8fd;
+width : 100px;
+}
+#AngleValue, #AngleValue2 {
 width : 140px;
 }
-#ChordValue, #MinLimitValue, #MaxLimitValue, #ThrowValue, #MinThrowValue, #MaxThrowValue, #ThrowValue2, #MinThrowValue2, #MaxThrowValue2, #DiffValue {
-width : 100px;
+#XValue, #YValue, #ZValue, #XOffsetValue, #YOffsetValue, #ZOffsetValue {
+width : 135px;
 }
 .buttons {
 display : inline-block;
@@ -71,22 +74,24 @@ text-decoration : none;
 white-space : nowrap;
 display : inline-block;
 font-size : 1.3em;
-margin : 6px 6px -2px 6px;
+margin : 6px 6px -4px 6px;
 border-radius : 20px 20px 0 0;
 width : 20%;
 cursor : pointer;
 }
 .tabmeasurements {
 background-color : #6adbe8;
-margin : 6px 6px -6px 6px;
 border-bottom : 4px solid #6adbe8;
 }
 .tabsettings {
 background-color : #f4e969;
-margin : 6px 6px -6px 6px;
 border-bottom : 4px solid #f4e969;
 }
-.label, .label2, .label3 {
+.tabcalibrations {
+background-color : #69e969;
+border-bottom : 4px solid #69e969;
+}
+.label, .label2, .label3, .label4 {
 display : inline-block;
 white-space : nowrap;
 text-align : right;
@@ -99,6 +104,9 @@ width : 100px;
 .label3 {
 text-align : center;
 width : 150px;
+}
+.label4 {
+width : 60px;
 }
 .unit {
 display : inline-block;
@@ -122,7 +130,7 @@ width : 160px;
 cursor : pointer;
 }
 /* Svg icons */
-.icon-measurements, .icon-init_angle, .icon-minmax_reset, .icon-settings, .img-esplogo {
+.icon-measurements, .icon-init_angle, .icon-minmax_reset, .icon-settings, .icon-calibrations, .img-esplogo {
 display : inline-block;
 vertical-align : -30%;
 background-color : transparent;
@@ -135,6 +143,9 @@ content : url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E
 }
 .icon-settings:before {
 content : url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3Csvg width='32' height='32' version='1.1' viewBox='0 0 8.4666664 8.4666664' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'%3E%3Cg transform='translate(.027095 .27117)'%3E%3Cpath id='a' d='m1.2902 5.73c-0.10703 0-0.19328 0.08625-0.19328 0.19328v1.634c0 0.10703 0.086254 0.19329 0.19328 0.19329h1.4594c0.10703 0 0.19328-0.08626 0.19328-0.19329v-1.634c1.1e-6 -0.10703-0.086254-0.19328-0.19328-0.19328zm-0.86376 0.65387c-0.11707 0-0.2113 0.09424-0.2113 0.2113v0.29717c0 0.11706 0.10103 0.25062 0.2113 0.2113h0.56073v-0.71977zm2.5798 0v0.71977h5.034c0.11707 0 0.2113-0.09424 0.2113-0.2113v-0.29717c0-0.11706-0.094232-0.2113-0.2113-0.2113z' color='%23000000'/%3E%3Cuse transform='matrix(-1 0 0 1 8.4125 -2.7708)' width='100%25' height='100%25' xlink:href='%23a'/%3E%3Cuse transform='translate(0 -5.5562)' width='100%25' height='100%25' xlink:href='%23a'/%3E%3C/g%3E%3C/svg%3E");
+}
+.icon-calibrations:before {
+content : url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3Csvg width='32' height='32' version='1.1' viewBox='0 0 8.4666664 8.4666664' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'%3E%3Cg id='b' transform='rotate(5.5393 2940 107.69)'%3E%3Cg transform='translate(-.13229 .13229)' fill-rule='evenodd' shape-rendering='auto'%3E%3Cpath transform='matrix(.26356 -.023277 .023277 .26356 3.5796 284.51)' d='m15.383 16.422s-6.0845 5.2217-8.939 7.5022c0.69141 0.66747 1.3076 1.4497 1.7344 2.0605l8.9351-7.4963zm-12.402 6.0605l-2.1816 7.916 7.9844-0.60156s0.23427-2.2464-0.99023-3.5664l-0.0058594 0.003906c-0.42184-0.61213-1.0649-1.4393-1.7715-2.1172l0.035156-0.035157c-0.010968 0.008763-0.02232 0.016696-0.033203 0.025391-1.3406-1.3817-3.0371-1.625-3.0371-1.625z' color='%23000000' color-rendering='auto' dominant-baseline='auto' image-rendering='auto' solid-color='%23000000' stroke-width='3.7795' style='font-feature-settings:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;isolation:auto;mix-blend-mode:normal;shape-padding:0;text-decoration-color:%23000000;text-decoration-line:none;text-decoration-style:solid;text-indent:0;text-orientation:mixed;text-transform:none;white-space:normal'/%3E%3C/g%3E%3C/g%3E%3Cuse id='a' transform='rotate(120 4.1795 5.1396)' width='100%25' height='100%25' xlink:href='%23b'/%3E%3Cuse transform='rotate(135 4.189 5.197)' width='100%25' height='100%25' xlink:href='%23a'/%3E%3C/svg%3E");
 }
 .icon-minmax_reset:before {
 content : url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3Csvg width='32' height='32' version='1.1' viewBox='0 0 8.4666664 8.4666664' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='m7.7156 6.622l-1.4976-2.019-1.4981 2.019h1.0091v1.7258h0.96229v-1.7258zm-7.4936-2.3316v-0.11423c0-0.1108 0.0892-0.2 0.2-0.2h7.6226c0.1108 0 0.2 0.0892 0.2 0.2v0.11423c0 0.1108-0.0892 0.2-0.2 0.2h-7.6226c-0.1108 0-0.2-0.0892-0.2-0.2zm0.52907-2.4458l1.4976 2.019 1.4981-2.019h-1.0091v-1.7258h-0.96229v1.7258z' color='%23000000'/%3E%3C/svg%3E");
@@ -232,34 +243,54 @@ input:checked + .slidersw:before {
 }
 </style>
 <title>ESP Angle meter</title>
-</head><body  onload="getSettings()">
+</head><body  onload="getSettings(0)">
 <div id="header">
 <div>
 <button class="tabbutton tabmeasurements" type="button" onclick="toggleMeasurements()"><i class="icon-measurements"></i> Data</button>
 <button class="tabbutton tabsettings" type="button" onclick="toggleSettings()"><i class="icon-settings"></i> Settings</button>
+<button class="tabbutton tabcalibrations" type="button" onclick="toggleCalibrations()"><i class="icon-calibrations"></i> Calibrations</button>
 </div>
 </div>
 <div id="settings">
-<div id="chord">
-<div class="slidecontainer">
-  <span class="label">Chord:</span><span id="ChordValue">50</span><span class="unit">mm</span>
-  <input type="range" min="1" max="200" value="50" class="slider" id="Chord">
+ <div id="chord">
+  <div class="slidecontainer">
+   <span class="label">Chord:</span><span id="ChordValue">50</span><span class="unit">mm</span>
+   <input type="range" min="1" max="200" value="50" class="slider" id="Chord">
+  </div>
+ </div>
+ <div id="minmax">
+  <div class="slidecontainer">
+   <span class="label">Min:</span><span id="MinLimitValue">50</span><span class="unit">mm</span>
+   <input type="range" min="0" max="200" value="25" class="slider" id="MinLimit">
+  </div>
+  <div class="slidecontainer">
+   <span class="label">Max:</span><span id="MaxLimitValue">50</span><span class="unit">mm</span>
+   <input type="range" min="0" max="200" value="25" class="slider" id="MaxLimit">
+  </div>
+ </div>
+ <div class="buttons">
+  <button class="button button2" type="button" onclick="getSettings(1)">Load</button>
+  <button class="button button2" type="button" onclick="sendData(301)">Save</button>
+ </div>
 </div>
-</div>
-<div id="minmax">
-<div class="slidecontainer">
-  <span class="label">Min:</span><span id="MinLimitValue">50</span><span class="unit">mm</span>
-  <input type="range" min="0" max="200" value="25" class="slider" id="MinLimit">
-</div>
-<div class="slidecontainer">
-  <span class="label">Max:</span><span id="MaxLimitValue">50</span><span class="unit">mm</span>
-  <input type="range" min="0" max="200" value="25" class="slider" id="MaxLimit">
-</div>
-</div>
-<div class="buttons">
-<button class="button button2" type="button" onclick="getSettings()">Load</button>
-<button class="button button2" type="button" onclick="sendData(301)">Save</button>
-</div>
+
+<div id="calibrations">
+ <div class="slidecontainer">
+  <span class="label4">X(g):</span><span id="XValue">0</span>
+  <span id="XOffsetValue">0</span><input type="range" min="-300" max="300" value="0" class="slider" id="XOffset">
+ </div>
+ <div class="slidecontainer">
+  <span class="label4">Y(g):</span><span id="YValue">0</span>
+  <span id="YOffsetValue">0</span><input type="range" min="-300" max="300" value="0" class="slider" id="YOffset">
+ </div>
+ <div class="slidecontainer">
+  <span class="label4">Z(g):</span><span id="ZValue">0</span>
+  <span id="ZOffsetValue">0</span><input type="range" min="-300" max="300" value="0" class="slider" id="ZOffset">
+ </div>
+ <div class="buttons">
+  <button class="button button2" type="button" onclick="getSettings(2)">Load</button>
+  <button class="button button2" type="button" onclick="sendData(305)">Save</button>
+ </div>
 </div>
 
 <div id="measurements">
@@ -295,6 +326,7 @@ input:checked + .slidersw:before {
 </div>
 <div id="bottom"><a href="http://github.com/f5soh/aeromodeling-throw-meter"><i class="img-esplogo"></i></a></div>
 <script>
+document.getElementById("calibrations").style.display = "none";
 document.getElementById("settings").style.display = "none";
 document.getElementById("measurements").style.display = "block";
 var chord_slider = document.getElementById("Chord");
@@ -303,6 +335,23 @@ var min_slider = document.getElementById("MinLimit");
 var min_display = document.getElementById("MinLimitValue");
 var max_slider = document.getElementById("MaxLimit");
 var max_display = document.getElementById("MaxLimitValue");
+
+var xoffset_slider = document.getElementById("XOffset");
+var xoffset_display = document.getElementById("XOffsetValue");
+var yoffset_slider = document.getElementById("YOffset");
+var yoffset_display = document.getElementById("YOffsetValue");
+var zoffset_slider = document.getElementById("ZOffset");
+var zoffset_display = document.getElementById("ZOffsetValue");
+
+xoffset_slider.oninput = function() {
+  xoffset_display.innerHTML = (this.value / 10000).toFixed(4);
+}
+yoffset_slider.oninput = function() {
+  yoffset_display.innerHTML = (this.value / 10000).toFixed(4);
+}
+zoffset_slider.oninput = function() {
+  zoffset_display.innerHTML = (this.value / 10000).toFixed(4);
+}
 
 chord_slider.oninput = function() {
   chord_display.innerHTML = this.value;
@@ -320,6 +369,15 @@ function toggleSettings() {
  if (document.getElementById("settings").style.display == "none") {
   document.getElementById("settings").style.display = "block";
   document.getElementById("measurements").style.display = "none";
+  document.getElementById("calibrations").style.display = "none";
+ }
+}
+
+function toggleCalibrations() {
+ if (document.getElementById("calibrations").style.display == "none") {
+  document.getElementById("calibrations").style.display = "block";
+  document.getElementById("settings").style.display = "none";
+  document.getElementById("measurements").style.display = "none";
  }
 }
 
@@ -327,6 +385,7 @@ function toggleMeasurements() {
  if (document.getElementById("measurements").style.display == "none") {
   document.getElementById("measurements").style.display = "block";
   document.getElementById("settings").style.display = "none";
+  document.getElementById("calibrations").style.display = "none";
  } 
  sendData(0);
 }
@@ -351,7 +410,7 @@ if (sensor == 1) {
 
 function sendData(value) {
 const xhttpcmd = new XMLHttpRequest();
-xhttpcmd.open("GET", "setData?cmd=" + value + "&chord="+ chord_slider.value + "&min=" + min_slider.value + "&max=" + max_slider.value, true);
+xhttpcmd.open("GET", "setData?cmd=" + value + "&chord="+ chord_slider.value + "&min=" + min_slider.value + "&max=" + max_slider.value + "&xoff=" + xoffset_slider.value + "&yoff=" + yoffset_slider.value + "&zoff=" + zoffset_slider.value, true);
 xhttpcmd.send(null);
 }
 
@@ -431,24 +490,37 @@ xhttp.onreadystatechange = function(event) {
     slave_found = "true";
     document.getElementById("slave").style.display = "block"; 
   }
+    document.getElementById("XValue").innerHTML = words[10];
+    document.getElementById("YValue").innerHTML = words[11];
+    document.getElementById("ZValue").innerHTML = words[12]; 
  }
 };
 xhttp.open("GET", "readData", true);
 xhttp.send(null);
 }
 
-function getSettings() {
+function getSettings(state) {
 const xhttp = new XMLHttpRequest();
 xhttp.onreadystatechange = function(event) {
  if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
   var str_in = this.responseText;
   var words = str_in.split(':');
-  document.getElementById("ChordValue").innerHTML = words[0];
-  chord_slider.value = words[0];
-  document.getElementById("MinLimitValue").innerHTML = words[1];
-  min_slider.value = words[1];
-  document.getElementById("MaxLimitValue").innerHTML = words[2];
-  max_slider.value = words[2];
+  if ((state == 0) || (state == 1)) {
+    document.getElementById("ChordValue").innerHTML = words[0];
+    chord_slider.value = words[0];
+    document.getElementById("MinLimitValue").innerHTML = words[1];
+    min_slider.value = words[1];
+    document.getElementById("MaxLimitValue").innerHTML = words[2];
+    max_slider.value = words[2];
+  }
+  if ((state == 0) || (state == 2)) {
+    document.getElementById("XOffsetValue").innerHTML = (parseFloat(words[3]) / 10000).toFixed(4);
+    document.getElementById("YOffsetValue").innerHTML = (parseFloat(words[4]) / 10000).toFixed(4);
+    document.getElementById("ZOffsetValue").innerHTML = (parseFloat(words[5]) / 10000).toFixed(4);
+    xoffset_slider.value = words[3];
+    yoffset_slider.value = words[4];
+    zoffset_slider.value = words[5];
+  } 
  }
 };
 xhttp.open("GET", "readSettings", true);

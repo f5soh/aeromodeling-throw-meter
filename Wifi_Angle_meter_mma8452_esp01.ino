@@ -63,8 +63,11 @@ MMA8452 mma;
 double ref_angle, last_angle;
 float angle_web, throw_web, minthrow_web = 0, maxthrow_web = 0;
 String str_angle2_web = "0", str_throw2_web = "0", str_minthrow2_web = "0", str_maxthrow2_web = "0", str_dual = "0";
-int corde = 50, min_setting = 0, max_setting = 0;
+int corde = 50, min_setting = 0, max_setting = 0, xoff_calibration = 0, yoff_calibration = 0, zoff_calibration = 0;
+float x_offset = 0, y_offset = 0, z_offset = 0;
 bool invert_angle = false;
+
+float x, y, z; // g measurements
 
 #define NUM_SAMPLES 30
 #define ALPHA       0.7
@@ -218,16 +221,24 @@ void handleValues()
               str_throw2_web + ":" + \
               str_minthrow2_web + ":" + \
               str_maxthrow2_web + ":" + \
-              str_dual);
+              str_dual+ ":" + \
+              String(x, 4) + ":" + \
+              String(y, 4) + ":" + \
+              String(z, 4)    
+              );
 }
 
 /** Send settings */
 void handleSettings()
 {
   loadSettings();
+  loadCalibrations();
   server.send(200, "text/plane", String(int(corde)) + ":" + \
               String(int(min_setting)) + ":" + \
-              String(int(max_setting)));
+              String(int(max_setting)) + ":" + \
+              String(int(xoff_calibration)) + ":" + \
+              String(int(yoff_calibration)) + ":" + \
+              String(int(zoff_calibration)));
 }
 
 /** Receive values from page */
@@ -239,16 +250,28 @@ void handleData()
   String str_cmd   = server.arg("cmd");
   String str_chord = server.arg("chord");
   String str_min   = server.arg("min");
-  String str_max   = server.arg("max");
+  String str_max   = server.arg("max");  
+  String str_xoff  = server.arg("xoff");
+  String str_yoff  = server.arg("yoff");
+  String str_zoff  = server.arg("zoff");
   corde = str_chord.toInt();
   min_setting = str_min.toInt();
   max_setting = str_max.toInt();
+  xoff_calibration = str_xoff.toInt();
+  yoff_calibration = str_yoff.toInt();
+  zoff_calibration = str_zoff.toInt();
+  x_offset = (float)xoff_calibration / 10000;
+  y_offset = (float)yoff_calibration / 10000;
+  z_offset = (float)zoff_calibration / 10000;
 
   // Serial.println("Cmd=" + str_cmd);
   // Serial.println("Chord=" + str_chord);
   // Serial.println("Min=" + str_min);
   // Serial.println("Max=" + str_max);
-
+  // Serial.println("Xoff=" + String(x_offset, 4));
+  // Serial.println("Yoff=" + str_yoff);
+  // Serial.println("Zoff=" + str_zoff);
+  
   int cmd = str_cmd.toInt();
   switch (cmd) {
   case 200:
@@ -277,6 +300,12 @@ void handleData()
     init_angle();
     sendToSlave(corde, cmd);
     break;
+  case 305:
+    saveCalibrations();
+    break;
+  case 306:
+    loadCalibrations();
+    break;    
   }
 
   server.send(200, "text/plain", "Master Ok");
@@ -413,7 +442,6 @@ boolean captivePortal()
 /** Return the current rotation value along X axis - in degrees */
 double read_angle()
 {
-  float x, y, z;
   float x_accum = 0, y_accum = 0, z_accum = 0;
 
   for (int nn = 0; nn < NUM_SAMPLES; nn++) {
@@ -427,6 +455,12 @@ double read_angle()
   y = y_accum / NUM_SAMPLES;
   z = z_accum / NUM_SAMPLES;
 
+  // apply g offset
+  x -= x_offset;
+  y -= y_offset;
+  z -= z_offset;
+  
+  //Serial.println("Samples: " + String(x,3) + ":" + String(y,3) + ":" + String(z, 3));
   return atan2(y, z) / M_PI * 180;
 }
 
@@ -529,6 +563,38 @@ void saveSettings()
   EEPROM.put(0 + sizeof(corde) + sizeof(min_setting), max_setting);
   char ok[2 + 1] = "OK";
   EEPROM.put(0 + sizeof(corde) + sizeof(min_setting) + sizeof(max_setting), ok);
+  EEPROM.commit();
+  EEPROM.end();
+}
+
+/** Load calibrations from EEPROM */
+void loadCalibrations()
+{
+  EEPROM.begin(512);
+  EEPROM.get(32, xoff_calibration );
+  EEPROM.get(32 + sizeof(xoff_calibration), yoff_calibration);
+  EEPROM.get(32 + sizeof(xoff_calibration) + sizeof(yoff_calibration), zoff_calibration);
+  char ok[2 + 1];
+  EEPROM.get(32 + sizeof(xoff_calibration) + sizeof(yoff_calibration) + sizeof(zoff_calibration), ok);
+  EEPROM.end();
+  if (String(ok) != String("OK")) {
+    xoff_calibration = 0;
+    yoff_calibration = 0;
+    zoff_calibration = 0;
+  }
+  Serial.println("Load calibrations: " + String(xoff_calibration) + "/" + String(yoff_calibration) + "/" + String(zoff_calibration));
+}
+
+/** Save calibrations to EEPROM */
+void saveCalibrations()
+{
+  Serial.println("Save calibrations: " + String(xoff_calibration) + "/" + String(yoff_calibration) + "/" + String(zoff_calibration));
+  EEPROM.begin(512);
+  EEPROM.put(32, xoff_calibration);
+  EEPROM.put(32 + sizeof(xoff_calibration), yoff_calibration);
+  EEPROM.put(32 + sizeof(xoff_calibration) + sizeof(yoff_calibration), zoff_calibration);
+  char ok[2 + 1] = "OK";
+  EEPROM.put(32 + sizeof(xoff_calibration) + sizeof(yoff_calibration) + sizeof(zoff_calibration), ok);
   EEPROM.commit();
   EEPROM.end();
 }
