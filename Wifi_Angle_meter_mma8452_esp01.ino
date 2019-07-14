@@ -204,9 +204,10 @@ void loop()
 /** Send main webpage */
 void handleRoot()
 {
-  String s = MAIN_page; // Read HTML contents
-
-  server.send(200, "text/html", s); // Send web page
+  // server.sendHeader("Cache-Control", "no-cache, no-store, must-revalidate", true);
+  // server.sendHeader("Pragma", "no-cache", true);
+  // server.sendHeader("Expires", "-1", true);
+  server.send_P(200, "text/html", MAIN_page, sizeof(MAIN_page)); // Send Main page
 }
 
 /** Send values to page */
