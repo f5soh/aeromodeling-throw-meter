@@ -65,6 +65,11 @@ vertical-align : top;
 display : inline-block;
 white-space : nowrap;
 }
+hr.separator {
+border : 1px solid black;
+width : 640px;
+display : inline-block;
+}
 .tabbutton {
 border : black solid 2px;
 color : black;
@@ -91,6 +96,17 @@ border-bottom : 4px solid #f4e969;
 background-color : #69e969;
 border-bottom : 4px solid #69e969;
 }
+.tabbuttonaudio {
+border : black solid 2px;
+padding : 8px;
+float : right;
+margin : 6px 0px 0px 0px;
+border-radius : 20px;
+width : 80px;
+background-color : #4c86af;
+cursor : pointer;
+}
+
 .label, .label2, .label3, .label4 {
 display : inline-block;
 white-space : nowrap;
@@ -150,6 +166,12 @@ content : url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E
 .icon-minmax_reset:before {
 content : url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3Csvg width='32' height='32' version='1.1' viewBox='0 0 8.4666664 8.4666664' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='m7.7156 6.622l-1.4976-2.019-1.4981 2.019h1.0091v1.7258h0.96229v-1.7258zm-7.4936-2.3316v-0.11423c0-0.1108 0.0892-0.2 0.2-0.2h7.6226c0.1108 0 0.2 0.0892 0.2 0.2v0.11423c0 0.1108-0.0892 0.2-0.2 0.2h-7.6226c-0.1108 0-0.2-0.0892-0.2-0.2zm0.52907-2.4458l1.4976 2.019 1.4981-2.019h-1.0091v-1.7258h-0.96229v1.7258z' color='%23000000'/%3E%3C/svg%3E");
 }
+.icon-audio_on:before {
+content : url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3Csvg width='32' height='32' version='1.1' viewBox='0 0 8.4666664 8.4666664' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='m4.3851 0.53998c-0.025192 9.5414e-4 -0.049554 0.0094194-0.07028 0.023771l-2.5027 1.6888v-0.12402c0-0.058632-0.047305-0.10594-0.10594-0.10594h-0.72037c-0.058632 0-0.10594 0.047305-0.10594 0.10594v4.2111c0 0.058632 0.047305 0.10594 0.10594 0.10594h0.72037c0.058632 0 0.10594-0.047305 0.10594-0.10594v-0.12247l2.5027 1.6862c0.087879 0.060147 0.20686-0.0025456 0.20671-0.10904v-7.1215c3.296e-4 -0.075029-0.061438-0.13531-0.13643-0.13281z' color='%23000000'/%3E%3Cg transform='translate(.1196 -.037943)' fill='none' stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='.44979'%3E%3Cpath d='m5.3045 3.0113c0.69588 0 1.26 0.56412 1.26 1.26-1e-7 0.69588-0.56412 1.26-1.26 1.26' color='%23000000'/%3E%3Cpath d='m5.3045 2.307c1.0848 0 1.9642 0.87942 1.9642 1.9642s-0.87942 1.9642-1.9642 1.9642' color='%23000000'/%3E%3C/g%3E%3C/svg%3E");
+}
+.icon-audio_off:before {
+content: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3Csvg width='32' height='32' version='1.1' viewBox='0 0 8.4666664 8.4666664' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'%3E%3Cpath d='m4.3851 0.53998c-0.025192 9.5414e-4 -0.049554 0.0094194-0.07028 0.023771l-2.5027 1.6888v-0.12402c0-0.058632-0.047305-0.10594-0.10594-0.10594h-0.72037c-0.058632 0-0.10594 0.047305-0.10594 0.10594v4.2111c0 0.058632 0.047305 0.10594 0.10594 0.10594h0.72037c0.058632 0 0.10594-0.047305 0.10594-0.10594v-0.12247l2.5027 1.6862c0.087879 0.060147 0.20686-0.0025456 0.20671-0.10904v-7.1215c3.296e-4 -0.075029-0.061438-0.13531-0.13643-0.13281z' color='%23000000'/%3E%3Cg transform='matrix(1.2205 0 0 1.2205 -6.4112 -1.9359)'%3E%3Cpath id='a' transform='rotate(-45)' d='m3.7208 9.6335h0.31953c0.058632 0 0.10583 0.047202 0.10583 0.10583v2.5795c0 0.058632-0.047202 0.10583-0.10583 0.10583h-0.31953c-0.058632 0-0.10583-0.047202-0.10583-0.10583v-2.5795c0-0.058632 0.047202-0.10583 0.10583-0.10583z' color='%23000000'/%3E%3Cuse transform='rotate(90 10.543 5.0547)' width='100%25' height='100%25' xlink:href='%23a'/%3E%3C/g%3E%3C/svg%3E");
+}
 .img-esplogo:before {
 content : url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3Csvg width='130' height='64' version='1.1' viewBox='0 0 34.395832 16.933333' xmlns='http://www.w3.org/2000/svg'%3E%3Cg transform='matrix(1.8689 -.028636 .02788 1.9197 .99928 -16.328)' fill='%23d90a00' fill-rule='evenodd' shape-rendering='auto'%3E%3Cpath d='m12.941 16.254l0.30028 0.62408 3.09e-4 0.001054c1.2306-0.34122 2.4616-0.68142 3.6916-1.0223l-0.02627-0.081537z' color='%23000000' color-rendering='auto' dominant-baseline='auto' image-rendering='auto' solid-color='%23000000' style='font-feature-settings:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;isolation:auto;mix-blend-mode:normal;shape-padding:0;text-decoration-color:%23000000;text-decoration-line:none;text-decoration-style:solid;text-indent:0;text-orientation:mixed;text-transform:none;white-space:normal'/%3E%3Cpath d='m4.4576 15.231c-1.8292 0.009153-4.4496 0.50494-4.4575 1.1929-0.029831 0.52819 5.0065 0.44521 6.4463 0.45673 2.0964-0.004657 4.193 0.020802 6.2893 0.052699l0.20531-0.6796c-3.0033-0.51976-6.1009-1.0346-8.4835-1.0227z' color='%23000000' color-rendering='auto' dominant-baseline='auto' image-rendering='auto' solid-color='%23000000' style='font-feature-settings:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;isolation:auto;mix-blend-mode:normal;shape-padding:0;text-decoration-color:%23000000;text-decoration-line:none;text-decoration-style:solid;text-indent:0;text-orientation:mixed;text-transform:none;white-space:normal'/%3E%3C/g%3E%3Cg transform='scale(1.1205 .89243)' stroke-width='.39033px' aria-label='ESP '%3E%3Cpath d='m5.7953 8.9439h-2.9427c-1.2253-0.0096171-2.061-1.037-2.0736-2.3938v-5.4229h4.8333v1.54h-3.0596v1.479h2.6327v1.54h-2.6327v0.97582c0 0.49469 0.24226 0.74203 0.72678 0.74203h2.5158z'/%3E%3Cpath d='m9.8864 0.98995c0.84707 0 1.5095 0.13214 1.9872 0.39643l-0.50824 1.4586c-0.68443-0.28001-2.6273-0.67107-2.8388 0.24166-0.088581 0.49698 0.052032 0.69181 0.33326 0.83072 0.21007 0.10503 0.70137 0.26089 1.4739 0.46758 1.2062 0.32189 1.8093 0.99445 1.8093 2.0059s-0.23378 1.5722-0.70136 1.9788c-0.44386 0.38287-1.025 0.57431-1.7433 0.57431h-2.7496v-1.54h2.6022c0.54889 0 0.82334-0.2321 0.82334-0.62598 0-0.39388-0.13214-0.5904-0.39643-0.7361-0.20329-0.11181-0.67086-0.27276-1.4027-0.48283-1.2706-0.36254-1.9059-1.0842-1.9059-2.2363 0.12882-2.1148 2.0339-2.3325 3.2172-2.3328z'/%3E%3Cpath d='m15.096 6.3214v2.6225h-1.7737v-5.55c0-0.71153 0.24057-1.2926 0.7217-1.7433 0.47097-0.44047 1.0707-0.66071 1.961-0.66071 1.4087-0.022185 2.7675 0.89708 2.786 2.5522-0.026916 3.0183-2.3838 2.7694-3.695 2.7793zm0.99536-3.7813c-0.56018 0.0051715-0.89126 0.30569-0.9953 0.90974v1.3926c0.3456 0 0.62513-0.013553 0.83859-0.040659 0.72167-0.094873 1.0825-0.46251 1.062-1.2386-0.020519-0.77609-0.48898-1.0187-0.90527-1.0231z'/%3E%3C/g%3E%3Cg transform='scale(1.0377 .96371)' stroke-width='.11079px' aria-label='Throw-meter'%3E%3Cpath d='m1.0379 9.686h1.9849v0.41978h-0.71406v1.7339h-0.55538v-1.7339h-0.7155z'/%3E%3Cpath d='m4.9096 10.856v0.98381h-0.51932v-0.75012c0.013452-0.3997-0.053854-0.52998-0.24235-0.51499-0.27504 0.039472-0.3384 0.22885-0.34621 0.47027v0.79484h-0.51643v-2.2446h0.51643v0.86553c0.15061-0.19419 0.3221-0.26927 0.53807-0.27553 0.42783 0.031803 0.58439 0.32579 0.56981 0.67078z'/%3E%3Cpath d='m6.5917 10.664c-0.22067-0.10723-0.4241-0.10166-0.57702 0.066361-0.071167 0.084627-0.10675 0.20628-0.10675 0.36496v0.74435h-0.51643v-1.6156h0.51643v0.26543c0.17292-0.27942 0.43551-0.3186 0.68232-0.29284z'/%3E%3Cpath d='m7.6202 10.554c-0.24609 8e-4 -0.33712 0.20328-0.35198 0.47892s0.093432 0.46042 0.35198 0.47893 0.33302-0.20606 0.34766-0.47893-0.10157-0.47972-0.34766-0.47892zm0-0.36929c0.48385 0.01128 0.90441 0.30488 0.88572 0.84822s-0.40179 0.85944-0.88572 0.84822-0.90868-0.30258-0.89004-0.84822 0.40619-0.8595 0.89004-0.84822z'/%3E%3Cpath d='m8.7382 10.224h0.502l0.2712 1.1136 0.27264-1.1136h0.43132l0.2712 1.1021 0.27264-1.1021h0.502l-0.42555 1.6156h-0.56403l-0.27264-1.1108-0.2712 1.1108h-0.56403z'/%3E%3Cpath d='m11.524 10.779h0.90592v0.41978h-0.90592z'/%3E%3Cpath d='m14.338 10.492c0.1384-0.21585 0.33783-0.32657 0.52941-0.30726 0.76615 0.12428 0.56981 0.97355 0.56981 1.6546h-0.51932v-0.84244c0.011002-0.35072-0.087903-0.39817-0.21061-0.42267-0.26278 0.043488-0.30852 0.23057-0.31014 0.47171v0.7934h-0.51932v-0.84244c0.015904-0.28675-0.078871-0.44253-0.21061-0.42267-0.26287 0.043912-0.3035 0.20846-0.31014 0.47027v0.79484h-0.51932v-1.6156h0.51932v0.23658c0.36963-0.4072 0.71932-0.32067 0.98092 0.031741z'/%3E%3Cpath d='m17.535 11.175h-1.2074c0.091709 0.45106 0.73834 0.34873 1.131 0.16878v0.39814c-0.24324 0.099085-0.49452 0.12385-0.73281 0.13992-0.5215-0.012523-0.91864-0.32831-0.92467-0.84821 0.008058-0.59001 0.35873-0.84346 0.89582-0.84822 0.56763 0.026347 0.84571 0.34189 0.83811 0.98959zm-0.53086-0.3188c-0.019014-0.23565-0.12345-0.31473-0.31014-0.32746-0.23027 0.011697-0.32453 0.1231-0.36064 0.32746z'/%3E%3Cpath d='m18.488 9.7653v0.45873h0.5323v0.36929h-0.5323v0.68521c0.005234 0.20077 0.11444 0.20264 0.22215 0.19186h0.26543v0.36929h-0.44286c-0.4131-9.95e-4 -0.55306-0.22127-0.56114-0.56114v-0.68521h-0.25677v-0.36929h0.25677v-0.45873z'/%3E%3Cpath d='m20.951 11.175h-1.2074c0.073212 0.47097 0.60886 0.34209 1.131 0.16878v0.39814c-0.24323 0.099087-0.49453 0.12385-0.73281 0.13992-0.65098-0.005884-0.91864-0.32831-0.92467-0.84821 0.045052-0.57674 0.43888-0.84346 0.89582-0.84822 0.29186 0.017195 0.85632 0.1461 0.83811 0.98959zm-0.53086-0.3188c-0.054242-0.45857-0.66064-0.35701-0.67077 0z'/%3E%3Cpath d='m22.54 10.664c-0.4194-0.10807-0.67161 0.02167-0.68377 0.43132v0.74435h-0.51643v-1.6156h0.51643v0.26543c0.16904-0.27293 0.32097-0.30057 0.68232-0.29284z'/%3E%3C/g%3E%3Cpath d='m28.677 0.8835l-1.4377 1.3714c2.2836 2.7588 2.1977 6.3526-0.2634 8.6395l1.3313 1.4751c3.4492-3.3914 3.5399-8.133 0.3698-11.486zm-2.3125 2.2051l-1.4372 1.3709c1.0984 1.2281 1.0291 3.0265-0.08985 4.0643l1.3302 1.4745c2.0843-2.3087 2.1863-4.8268 0.19685-6.9097zm-2.3944 2.2834l-1.0621 1.0128 1.0441 1.1573c0.55776-0.68429 0.62546-1.5856 0.018-2.1701z' color='%23000000' color-rendering='auto' dominant-baseline='auto' image-rendering='auto' shape-rendering='auto' solid-color='%23000000' style='font-feature-settings:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;isolation:auto;mix-blend-mode:normal;shape-padding:0;text-decoration-color:%23000000;text-decoration-line:none;text-decoration-style:solid;text-indent:0;text-orientation:mixed;text-transform:none;white-space:normal'/%3E%3C/svg%3E");
 }
@@ -164,7 +186,7 @@ content : url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E
   border-radius: 5px;
   background: #d3d3d3;
   outline: none;
-  opacity: 0.6;
+  opacity: 0.8;
   -webkit-transition: .2s;
   transition: opacity .2s;
 }
@@ -249,6 +271,7 @@ input:checked + .slidersw:before {
 <button class="tabbutton tabmeasurements" type="button" onclick="toggleMeasurements()"><i class="icon-measurements"></i> Data</button>
 <button class="tabbutton tabsettings" type="button" onclick="toggleSettings()"><i class="icon-settings"></i> Settings</button>
 <button class="tabbutton tabcalibrations" type="button" onclick="toggleCalibrations()"><i class="icon-calibrations"></i> Calibrations</button>
+<button class="tabbuttonaudio" type="button" onclick="toggleAudio()"><i class="icon-audio_off" id="audio_off"></i><i class="icon-audio_on" id="audio_on"></i></button>
 </div>
 </div>
 <div id="settings">
@@ -273,7 +296,6 @@ input:checked + .slidersw:before {
   <button class="button button2" type="button" onclick="sendData(301)">Save</button>
  </div>
 </div>
-
 <div id="calibrations">
  <div class="slidecontainer">
   <span class="label4">X(g):</span><span id="XValue">0</span>
@@ -292,7 +314,6 @@ input:checked + .slidersw:before {
   <button class="button button2" type="button" onclick="sendData(305)">Save</button>
  </div>
 </div>
-
 <div id="measurements">
 <div id="master">
 <div class="values">
@@ -310,6 +331,7 @@ input:checked + .slidersw:before {
 </div>
 </div>
 <div id="slave">
+<hr class="separator"><br>
 <div class="values">
 <span class="label">Angle2:</span><span id="AngleValue2">-180.00</span><span class="unit">deg</span><br>
 <span class="label">Throw2:</span><span id="ThrowValue2">100</span><span class="unit">mm</span>
@@ -326,6 +348,35 @@ input:checked + .slidersw:before {
 </div>
 <div id="bottom"><a href="http://github.com/f5soh/aeromodeling-throw-meter"><i class="img-esplogo"></i></a></div>
 <script>
+var canPlay=false;
+this.audioEnabled = false;
+this.AudioAPI=null;
+window.addEventListener('load', checkAudioApi, false);
+this.lastAlarm = "undefined";
+this.lastAlarm2 = "undefined";
+document.getElementById("audio_off").style.display = "block";
+document.getElementById("audio_on").style.display = "none";
+
+function checkAudioApi(){ 
+ if(self.AudioContext){AudioAPI=self.AudioContext;canPlay=true;return;} 
+ else if (self.webkitAudioContext){AudioAPI=self.webkitAudioContext;canPlay=true;return;}
+ else{canPlay=false;return;}
+}
+
+function beep(vol, freq, duration){
+  if (!canPlay || !audioEnabled){return;}
+  this.a=new AudioAPI();v=a.createOscillator();u=a.createGain();v.connect(u);v.frequency.value=freq;v.type="square";
+  u.connect(a.destination);u.gain.value=vol*0.01;v.start(a.currentTime);v.stop(a.currentTime+duration*0.001);
+}
+function toggleAudio() {
+  if (canPlay && !audioEnabled) {
+    document.getElementById("audio_on").style.display = "block";document.getElementById("audio_off").style.display = "none";audioEnabled = true;
+  } else {
+    document.getElementById("audio_off").style.display = "block";document.getElementById("audio_on").style.display = "none";audioEnabled = false;
+  }
+  beep(20, 200, 25); 
+}
+
 document.getElementById("calibrations").style.display = "none";
 document.getElementById("settings").style.display = "none";
 document.getElementById("measurements").style.display = "block";
@@ -343,27 +394,13 @@ var yoffset_display = document.getElementById("YOffsetValue");
 var zoffset_slider = document.getElementById("ZOffset");
 var zoffset_display = document.getElementById("ZOffsetValue");
 
-xoffset_slider.oninput = function() {
-  xoffset_display.innerHTML = (this.value / 10000).toFixed(4);
-}
-yoffset_slider.oninput = function() {
-  yoffset_display.innerHTML = (this.value / 10000).toFixed(4);
-}
-zoffset_slider.oninput = function() {
-  zoffset_display.innerHTML = (this.value / 10000).toFixed(4);
-}
+xoffset_slider.oninput = function() {xoffset_display.innerHTML = (this.value / 10000).toFixed(4);}
+yoffset_slider.oninput = function() {yoffset_display.innerHTML = (this.value / 10000).toFixed(4);}
+zoffset_slider.oninput = function() {zoffset_display.innerHTML = (this.value / 10000).toFixed(4);}
 
-chord_slider.oninput = function() {
-  chord_display.innerHTML = this.value;
-}
-
-min_slider.oninput = function() {
-  min_display.innerHTML = this.value;
-}
-
-max_slider.oninput = function() {
-  max_display.innerHTML = this.value;
-}
+chord_slider.oninput = function() {chord_display.innerHTML = this.value;}
+min_slider.oninput = function() {min_display.innerHTML = this.value;}
+max_slider.oninput = function() {max_display.innerHTML = this.value;}
 
 function toggleSettings() {
  if (document.getElementById("settings").style.display == "none") {
@@ -372,7 +409,6 @@ function toggleSettings() {
   document.getElementById("calibrations").style.display = "none";
  }
 }
-
 function toggleCalibrations() {
  if (document.getElementById("calibrations").style.display == "none") {
   document.getElementById("calibrations").style.display = "block";
@@ -380,7 +416,6 @@ function toggleCalibrations() {
   document.getElementById("measurements").style.display = "none";
  }
 }
-
 function toggleMeasurements() {
  if (document.getElementById("measurements").style.display == "none") {
   document.getElementById("measurements").style.display = "block";
@@ -389,22 +424,13 @@ function toggleMeasurements() {
  } 
  sendData(0);
 }
-
 function invertAngle(sensor){
 var checkBox1 = document.getElementById("sensor1");
 var checkBox2 = document.getElementById("sensor2");
 if (sensor == 1) {
- if (checkBox1.checked == true){
-   sendData(201);
- } else {
-   sendData(200);
- }
+ if (checkBox1.checked == true){sendData(201);} else {sendData(200);}
 } else if (sensor == 2) {
- if (checkBox2.checked == true){
-   sendData(203);
- } else {
-   sendData(202);
- }
+ if (checkBox2.checked == true){sendData(203);} else {sendData(202);}
 }
 };
 
@@ -412,6 +438,7 @@ function sendData(value) {
 const xhttpcmd = new XMLHttpRequest();
 xhttpcmd.open("GET", "setData?cmd=" + value + "&chord="+ chord_slider.value + "&min=" + min_slider.value + "&max=" + max_slider.value + "&xoff=" + xoffset_slider.value + "&yoff=" + yoffset_slider.value + "&zoff=" + zoffset_slider.value, true);
 xhttpcmd.send(null);
+beep(20, 180, 25); 
 }
 
 setInterval(function() {
@@ -425,33 +452,42 @@ var throw_value = parseFloat(document.getElementById("ThrowValue").innerHTML);
 var throw_value2 = parseFloat(document.getElementById("ThrowValue2").innerHTML);
 var min_limit = parseFloat(min_slider.value);
 var max_limit = parseFloat(max_slider.value);
- if (throw_value > max_limit) {
+ if ((throw_value > max_limit) && (lastAlarm == "OK")) {
+  lastAlarm = "";
   document.getElementById("ThrowValue").style.color = 'red';
   document.getElementById("MinThrowValue").style.color = 'black';
   document.getElementById("MaxThrowValue").style.color = 'red';
- } else if (throw_value < -min_limit) {
+  beep(30, 120, 150);
+ } else if ((throw_value < -min_limit) && (lastAlarm == "OK")) {
+  lastAlarm = "";
   document.getElementById("ThrowValue").style.color = 'red';
   document.getElementById("MinThrowValue").style.color = 'red';
   document.getElementById("MaxThrowValue").style.color = 'black';
+  beep(30, 110, 150);
  } else {
+  lastAlarm = "OK";
   document.getElementById("ThrowValue").style.color = 'black';
   document.getElementById("MinThrowValue").style.color = 'black';
   document.getElementById("MaxThrowValue").style.color = 'black';
  }
- if (throw_value2 > max_limit) {
+ if (slave_found && (throw_value2 > max_limit) && (lastAlarm2 == "OK")) {
+  lastAlarm2 = "";
   document.getElementById("ThrowValue2").style.color = 'red';
   document.getElementById("MinThrowValue2").style.color = 'black';
   document.getElementById("MaxThrowValue2").style.color = 'red';
- } else if (throw_value2 < -min_limit) {
+  beep(30, 120, 150);
+ } else if (slave_found && (throw_value2 < -min_limit)  && (lastAlarm2 == "OK")) {
+  lastAlarm2 = "";
   document.getElementById("ThrowValue2").style.color = 'red';
   document.getElementById("MinThrowValue2").style.color = 'red';
   document.getElementById("MaxThrowValue2").style.color = 'black';
+  beep(30, 110, 150);
  } else {
+  lastAlarm2 = "OK";
   document.getElementById("ThrowValue2").style.color = 'black';
   document.getElementById("MinThrowValue2").style.color = 'black';
   document.getElementById("MaxThrowValue2").style.color = 'black';
  }
-
  if (slave_found != "false") {
   var diff = 0;
   throw_value = Math.abs(throw_value);
@@ -490,9 +526,9 @@ xhttp.onreadystatechange = function(event) {
     slave_found = "true";
     document.getElementById("slave").style.display = "block"; 
   }
-    document.getElementById("XValue").innerHTML = words[10];
-    document.getElementById("YValue").innerHTML = words[11];
-    document.getElementById("ZValue").innerHTML = words[12]; 
+  document.getElementById("XValue").innerHTML = words[10];
+  document.getElementById("YValue").innerHTML = words[11];
+  document.getElementById("ZValue").innerHTML = words[12]; 
  }
 };
 xhttp.open("GET", "readData", true);
@@ -525,6 +561,7 @@ xhttp.onreadystatechange = function(event) {
 };
 xhttp.open("GET", "readSettings", true);
 xhttp.send(null);
+beep(20, 180, 25);
 }
 </script>
 </body></html>
