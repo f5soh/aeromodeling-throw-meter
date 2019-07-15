@@ -349,11 +349,9 @@ input:checked + .slidersw:before {
 <div id="bottom"><a href="http://github.com/f5soh/aeromodeling-throw-meter"><i class="img-esplogo"></i></a></div>
 <script>
 var canPlay=false;
-this.audioEnabled = false;
-this.AudioAPI=null;
+var audioEnabled=false;
+var AudioAPI=null;
 window.addEventListener('load', checkAudioApi, false);
-this.lastAlarm = "undefined";
-this.lastAlarm2 = "undefined";
 document.getElementById("audio_off").style.display = "block";
 document.getElementById("audio_on").style.display = "none";
 
@@ -376,10 +374,13 @@ function toggleAudio() {
   }
   beep(20, 200, 25); 
 }
-
+var slave_found = false;
+var alarm = false;
+var alarm2 = false;
 document.getElementById("calibrations").style.display = "none";
 document.getElementById("settings").style.display = "none";
 document.getElementById("measurements").style.display = "block";
+document.getElementById("slave").style.display = "none";
 var chord_slider = document.getElementById("Chord");
 var chord_display = document.getElementById("ChordValue");
 var min_slider = document.getElementById("MinLimit");
@@ -452,43 +453,43 @@ var throw_value = parseFloat(document.getElementById("ThrowValue").innerHTML);
 var throw_value2 = parseFloat(document.getElementById("ThrowValue2").innerHTML);
 var min_limit = parseFloat(min_slider.value);
 var max_limit = parseFloat(max_slider.value);
- if ((throw_value > max_limit) && (lastAlarm == "OK")) {
-  lastAlarm = "";
+ if ((throw_value > max_limit) && !alarm) {
+  alarm = true;
   document.getElementById("ThrowValue").style.color = 'red';
   document.getElementById("MinThrowValue").style.color = 'black';
   document.getElementById("MaxThrowValue").style.color = 'red';
   beep(30, 120, 150);
- } else if ((throw_value < -min_limit) && (lastAlarm == "OK")) {
-  lastAlarm = "";
+ } else if ((throw_value < -min_limit) && !alarm) {
+  alarm = true;
   document.getElementById("ThrowValue").style.color = 'red';
   document.getElementById("MinThrowValue").style.color = 'red';
   document.getElementById("MaxThrowValue").style.color = 'black';
   beep(30, 110, 150);
  } else {
-  lastAlarm = "OK";
+  alarm = false;
   document.getElementById("ThrowValue").style.color = 'black';
   document.getElementById("MinThrowValue").style.color = 'black';
   document.getElementById("MaxThrowValue").style.color = 'black';
  }
- if (slave_found && (throw_value2 > max_limit) && (lastAlarm2 == "OK")) {
-  lastAlarm2 = "";
+ if (slave_found && (throw_value2 > max_limit) && !alarm2) {
+  alarm2 = true;
   document.getElementById("ThrowValue2").style.color = 'red';
   document.getElementById("MinThrowValue2").style.color = 'black';
   document.getElementById("MaxThrowValue2").style.color = 'red';
   beep(30, 120, 150);
- } else if (slave_found && (throw_value2 < -min_limit)  && (lastAlarm2 == "OK")) {
-  lastAlarm2 = "";
+ } else if (slave_found && (throw_value2 < -min_limit) && !alarm2) {
+  alarm2 = true;
   document.getElementById("ThrowValue2").style.color = 'red';
   document.getElementById("MinThrowValue2").style.color = 'red';
   document.getElementById("MaxThrowValue2").style.color = 'black';
   beep(30, 110, 150);
  } else {
-  lastAlarm2 = "OK";
+  alarm2 = false;
   document.getElementById("ThrowValue2").style.color = 'black';
   document.getElementById("MinThrowValue2").style.color = 'black';
   document.getElementById("MaxThrowValue2").style.color = 'black';
  }
- if (slave_found != "false") {
+ if (slave_found) {
   var diff = 0;
   throw_value = Math.abs(throw_value);
   throw_value2 = Math.abs(throw_value2);
@@ -503,7 +504,6 @@ var max_limit = parseFloat(max_slider.value);
 }
 
 function getData() {
-this.slave_found = "undefined";
 const xhttp = new XMLHttpRequest();
 xhttp.onreadystatechange = function(event) {
  if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
@@ -519,11 +519,11 @@ xhttp.onreadystatechange = function(event) {
   document.getElementById("ThrowValue2").innerHTML = words[6];
   document.getElementById("MinThrowValue2").innerHTML = words[7];
   document.getElementById("MaxThrowValue2").innerHTML = words[8];
-  if ((words[9] != "1") && (slave_found != "false")) {
-    slave_found = "false";
+  if ((words[9] == "0") && slave_found) {
+    slave_found = false;
     document.getElementById("slave").style.display = "none";
-  } else if ((words[9] != "0")) {
-    slave_found = "true";
+  } else if ((words[9] == "1") && !slave_found) {
+    slave_found = true;
     document.getElementById("slave").style.display = "block"; 
   }
   document.getElementById("XValue").innerHTML = words[10];
