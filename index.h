@@ -375,8 +375,6 @@ function toggleAudio() {
   beep(20, 200, 25); 
 }
 var slave_found = false;
-var alarm = false;
-var alarm2 = false;
 document.getElementById("calibrations").style.display = "none";
 document.getElementById("settings").style.display = "none";
 document.getElementById("measurements").style.display = "block";
@@ -453,38 +451,32 @@ var throw_value = parseFloat(document.getElementById("ThrowValue").innerHTML);
 var throw_value2 = parseFloat(document.getElementById("ThrowValue2").innerHTML);
 var min_limit = parseFloat(min_slider.value);
 var max_limit = parseFloat(max_slider.value);
- if ((throw_value > max_limit) && !alarm) {
-  alarm = true;
+ if (throw_value > max_limit) {
   document.getElementById("ThrowValue").style.color = 'red';
   document.getElementById("MinThrowValue").style.color = 'black';
   document.getElementById("MaxThrowValue").style.color = 'red';
   beep(30, 120, 150);
- } else if ((throw_value < -min_limit) && !alarm) {
-  alarm = true;
+ } else if (throw_value < -min_limit) {
   document.getElementById("ThrowValue").style.color = 'red';
   document.getElementById("MinThrowValue").style.color = 'red';
   document.getElementById("MaxThrowValue").style.color = 'black';
   beep(30, 110, 150);
  } else {
-  alarm = false;
   document.getElementById("ThrowValue").style.color = 'black';
   document.getElementById("MinThrowValue").style.color = 'black';
   document.getElementById("MaxThrowValue").style.color = 'black';
  }
- if (slave_found && (throw_value2 > max_limit) && !alarm2) {
-  alarm2 = true;
+ if (slave_found && (throw_value2 > max_limit)) {
   document.getElementById("ThrowValue2").style.color = 'red';
   document.getElementById("MinThrowValue2").style.color = 'black';
   document.getElementById("MaxThrowValue2").style.color = 'red';
   beep(30, 120, 150);
- } else if (slave_found && (throw_value2 < -min_limit) && !alarm2) {
-  alarm2 = true;
+ } else if (slave_found && (throw_value2 < -min_limit)) {
   document.getElementById("ThrowValue2").style.color = 'red';
   document.getElementById("MinThrowValue2").style.color = 'red';
   document.getElementById("MaxThrowValue2").style.color = 'black';
   beep(30, 110, 150);
  } else {
-  alarm2 = false;
   document.getElementById("ThrowValue2").style.color = 'black';
   document.getElementById("MinThrowValue2").style.color = 'black';
   document.getElementById("MaxThrowValue2").style.color = 'black';
