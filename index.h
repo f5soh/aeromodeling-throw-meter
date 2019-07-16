@@ -194,9 +194,9 @@ content : url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E
 .slidecontainer {
   width: 100%;
 }
-.slider {
+.slider, .slider2 {
   -webkit-appearance: none;
-  width: 400px;
+  width: 560px;
   height: 10px;
   border-radius: 5px;
   background: #d3d3d3;
@@ -205,10 +205,13 @@ content : url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E
   -webkit-transition: .2s;
   transition: opacity .2s;
 }
-.slider:hover {
+.slider2 {
+  width: 450px;
+}
+.slider:hover, .slider2:hover {
   opacity: 1;
 }
-.slider::-webkit-slider-thumb {
+.slider::-webkit-slider-thumb, .slider2::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
   width: 50px;
@@ -218,7 +221,7 @@ content : url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E
   background-image: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3Csvg width='50' height='50' version='1.1' viewBox='0 0 7.9374997 7.9374997' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='m1.1251 0.16297h5.6586c0.54893 0 0.99084 0.44192 0.99084 0.99085v5.6586c0 0.54893-0.44192 0.99084-0.99084 0.99084h-5.6586c-0.54893 0-0.99084-0.44192-0.99084-0.99084v-5.6586c0-0.54893 0.44192-0.99085 0.99084-0.99085z' color='%23000000' fill='none' stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='.29725'/%3E%3Cpath d='m2.2644 1.612c-0.21897 0.003176-0.39387 0.18332-0.39058 0.40229v3.938c0 0.52858 0.79287 0.52858 0.79287 0v-3.938c0.0033584-0.22355-0.17873-0.40564-0.40229-0.40229zm3.3689 0c-0.21897 0.003176-0.39387 0.18332-0.39058 0.40229v3.938c0 0.52858 0.79287 0.52858 0.79287 0v-3.938c0.0033584-0.22355-0.17873-0.40564-0.40229-0.40229zm-1.6844 0c-0.21897 0.003176-0.39387 0.18332-0.39058 0.40229v3.938c0 0.52858 0.79287 0.52858 0.79287 0v-3.938c0.0033585-0.22355-0.17873-0.40564-0.40229-0.40229z' color='%23000000' color-rendering='auto' dominant-baseline='auto' fill-rule='evenodd' image-rendering='auto' shape-rendering='auto' solid-color='%23000000' style='font-feature-settings:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;isolation:auto;mix-blend-mode:normal;shape-padding:0;text-decoration-color:%23000000;text-decoration-line:none;text-decoration-style:solid;text-indent:0;text-orientation:mixed;text-transform:none;white-space:normal'/%3E%3C/svg%3E");
   cursor: pointer;
 }
-.slider::-moz-range-thumb {
+.slider::-moz-range-thumb, .slider2::-moz-range-thumb {
   width: 50px;
   height: 50px;
   border: 0;
@@ -315,15 +318,15 @@ input:checked + .slidersw:before {
 <div id="calibrations">
  <div class="slidecontainer">
   <span class="label4">X(g):</span><span id="XValue">0</span>
-  <span id="XOffsetValue">0</span><input type="range" min="-300" max="300" value="0" class="slider" id="XOffset">
+  <span id="XOffsetValue">0</span><input type="range" min="-300" max="300" value="0" class="slider2" id="XOffset">
  </div>
  <div class="slidecontainer">
   <span class="label4">Y(g):</span><span id="YValue">0</span>
-  <span id="YOffsetValue">0</span><input type="range" min="-300" max="300" value="0" class="slider" id="YOffset">
+  <span id="YOffsetValue">0</span><input type="range" min="-300" max="300" value="0" class="slider2" id="YOffset">
  </div>
  <div class="slidecontainer">
   <span class="label4">Z(g):</span><span id="ZValue">0</span>
-  <span id="ZOffsetValue">0</span><input type="range" min="-300" max="300" value="0" class="slider" id="ZOffset">
+  <span id="ZOffsetValue">0</span><input type="range" min="-300" max="300" value="0" class="slider2" id="ZOffset">
  </div>
  <div class="buttons">
   <button class="button button2" type="button" onclick="getSettings(2)">Load</button>
