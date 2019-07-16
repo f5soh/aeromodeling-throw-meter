@@ -12,6 +12,7 @@
 // #include <WiFiClient.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266HTTPClient.h>
+#include <ESP8266HTTPUpdateServer.h>
 #include <DNSServer.h>
 #include <ESP8266mDNS.h>
 #include <EEPROM.h>
@@ -39,6 +40,7 @@ const char *myHostname = "debat";
 
 // Web server
 ESP8266WebServer server(80);
+ESP8266HTTPUpdateServer httpUpdater;
 
 // Http client
 HTTPClient http;
@@ -151,6 +153,7 @@ void setup()
     loadSettings();
   }
 
+  httpUpdater.setup(&server);
   server.begin();
   Serial.println("HTTP server started");
 
@@ -222,7 +225,7 @@ void handleValues()
               str_throw2_web + ":" + \
               str_minthrow2_web + ":" + \
               str_maxthrow2_web + ":" + \
-              str_dual+ ":" + \
+              str_dual + ":" + \
               String(x, 4) + ":" + \
               String(y, 4) + ":" + \
               String(z, 4)    
