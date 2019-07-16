@@ -22,9 +22,10 @@ text-align : left;
 border-width : 2px;
 border-radius : 0 0 20px 20px;
 }
-#measurements, #settings, #calibrations {
+#measurements, #settings, #calibrations, #system {
 padding : 10px 0 0 15px;
 border : black solid 2px;
+min-height: 280px;
 background-color : #6adbe8;
 }
 #settings {
@@ -34,6 +35,13 @@ display : none;
 #calibrations {
 background-color : #69e969;
 display : none;
+}
+#system {
+background-color : #9f9f9f;
+display : none;
+}
+#sysdata {
+font : 1.5em sans-serif; 
 }
 #chord {
 display : inline-block;
@@ -96,6 +104,10 @@ border-bottom : 4px solid #f4e969;
 background-color : #69e969;
 border-bottom : 4px solid #69e969;
 }
+.tabsystem {
+background-color : #9f9f9f;
+border-bottom : 4px solid #9f9f9f;
+}
 .tabbuttonaudio {
 border : black solid 2px;
 padding : 8px;
@@ -146,7 +158,7 @@ width : 160px;
 cursor : pointer;
 }
 /* Svg icons */
-.icon-measurements, .icon-init_angle, .icon-minmax_reset, .icon-settings, .icon-calibrations, .img-esplogo {
+.icon-measurements, .icon-init_angle, .icon-minmax_reset, .icon-settings, .icon-calibrations, .icon-system, .img-esplogo {
 display : inline-block;
 vertical-align : -30%;
 background-color : transparent;
@@ -162,6 +174,9 @@ content : url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E
 }
 .icon-calibrations:before {
 content : url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3Csvg width='32' height='32' version='1.1' viewBox='0 0 8.4666664 8.4666664' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'%3E%3Cg id='b' transform='rotate(5.5393 2940 107.69)'%3E%3Cg transform='translate(-.13229 .13229)' fill-rule='evenodd' shape-rendering='auto'%3E%3Cpath transform='matrix(.26356 -.023277 .023277 .26356 3.5796 284.51)' d='m15.383 16.422s-6.0845 5.2217-8.939 7.5022c0.69141 0.66747 1.3076 1.4497 1.7344 2.0605l8.9351-7.4963zm-12.402 6.0605l-2.1816 7.916 7.9844-0.60156s0.23427-2.2464-0.99023-3.5664l-0.0058594 0.003906c-0.42184-0.61213-1.0649-1.4393-1.7715-2.1172l0.035156-0.035157c-0.010968 0.008763-0.02232 0.016696-0.033203 0.025391-1.3406-1.3817-3.0371-1.625-3.0371-1.625z' color='%23000000' color-rendering='auto' dominant-baseline='auto' image-rendering='auto' solid-color='%23000000' stroke-width='3.7795' style='font-feature-settings:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;isolation:auto;mix-blend-mode:normal;shape-padding:0;text-decoration-color:%23000000;text-decoration-line:none;text-decoration-style:solid;text-indent:0;text-orientation:mixed;text-transform:none;white-space:normal'/%3E%3C/g%3E%3C/g%3E%3Cuse id='a' transform='rotate(120 4.1795 5.1396)' width='100%25' height='100%25' xlink:href='%23b'/%3E%3Cuse transform='rotate(135 4.189 5.197)' width='100%25' height='100%25' xlink:href='%23a'/%3E%3C/svg%3E");
+}
+.icon-system:before {
+content : url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3Csvg width='32' height='32' version='1.1' viewBox='0 0 8.4666664 8.4666664' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'%3E%3Cg transform='matrix(1.0463 0 0 1.0463 -.33731 -.32381)'%3E%3Crect x='2.1624' y='1.1287' width='4.4416' height='6.3394' rx='.50574' ry='.50574' color='%23000000' fill='none' stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='.55844'/%3E%3Cpath id='a' d='m0.73335 1.7654h0.82908v0.80458h-0.82908c-0.19265 0-0.34775-0.13684-0.34775-0.30682v-0.19093c0-0.16998 0.1551-0.30682 0.34775-0.30682z' color='%23000000'/%3E%3Cuse transform='translate(0 1.391)' width='100%25' height='100%25' xlink:href='%23a'/%3E%3Cuse transform='translate(0 2.782)' width='100%25' height='100%25' xlink:href='%23a'/%3E%3Cuse transform='translate(0 4.173)' width='100%25' height='100%25' xlink:href='%23a'/%3E%3Cuse transform='matrix(-1 0 0 1 8.7367 0)' width='100%25' height='100%25' xlink:href='%23a'/%3E%3Cuse transform='matrix(-1 0 0 1 8.7367 1.391)' width='100%25' height='100%25' xlink:href='%23a'/%3E%3Cuse transform='matrix(-1 0 0 1 8.7367 2.782)' width='100%25' height='100%25' xlink:href='%23a'/%3E%3Cuse transform='matrix(-1 0 0 1 8.7367 4.173)' width='100%25' height='100%25' xlink:href='%23a'/%3E%3C/g%3E%3C/svg%3E");
 }
 .icon-minmax_reset:before {
 content : url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3Csvg width='32' height='32' version='1.1' viewBox='0 0 8.4666664 8.4666664' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='m7.7156 6.622l-1.4976-2.019-1.4981 2.019h1.0091v1.7258h0.96229v-1.7258zm-7.4936-2.3316v-0.11423c0-0.1108 0.0892-0.2 0.2-0.2h7.6226c0.1108 0 0.2 0.0892 0.2 0.2v0.11423c0 0.1108-0.0892 0.2-0.2 0.2h-7.6226c-0.1108 0-0.2-0.0892-0.2-0.2zm0.52907-2.4458l1.4976 2.019 1.4981-2.019h-1.0091v-1.7258h-0.96229v1.7258z' color='%23000000'/%3E%3C/svg%3E");
@@ -271,6 +286,7 @@ input:checked + .slidersw:before {
 <button class="tabbutton tabmeasurements" type="button" onclick="toggleMeasurements()"><i class="icon-measurements"></i> Data</button>
 <button class="tabbutton tabsettings" type="button" onclick="toggleSettings()"><i class="icon-settings"></i> Settings</button>
 <button class="tabbutton tabcalibrations" type="button" onclick="toggleCalibrations()"><i class="icon-calibrations"></i> Calibrations</button>
+<button class="tabbutton tabsystem" type="button" onclick="toggleSystem()"><i class="icon-system"></i> System</button>
 <button class="tabbuttonaudio" type="button" onclick="toggleAudio()"><i class="icon-audio_off" id="audio_off"></i><i class="icon-audio_on" id="audio_on"></i></button>
 </div>
 </div>
@@ -317,13 +333,13 @@ input:checked + .slidersw:before {
 <div id="measurements">
 <div id="master">
 <div class="values">
-<span class="label">Angle:</span><span id="AngleValue">-180.00</span><span class="unit">deg</span><br>
-<span class="label">Throw:</span><span id="ThrowValue">100</span><span class="unit">mm</span>
+<span class="label">Angle:</span><span id="AngleValue">0.00</span><span class="unit">deg</span><br>
+<span class="label">Throw:</span><span id="ThrowValue">0</span><span class="unit">mm</span>
 <label class="switch"><input type="checkbox" id="sensor1" onclick="invertAngle(1)"><span class="slidersw round"></span></label>
 </div>
 <div class="values">
-<span class="label2">Max:</span><span id="MaxThrowValue">100</span><span class="unit">mm</span><br> 
-<span class="label2">Min:</span><span id="MinThrowValue">-100</span><span class="unit">mm</span> 
+<span class="label2">Max:</span><span id="MaxThrowValue">0</span><span class="unit">mm</span><br> 
+<span class="label2">Min:</span><span id="MinThrowValue">0</span><span class="unit">mm</span> 
 </div>
 <div class="buttons">
 <button class="button" type="button" onclick="sendData(304)"><i class="icon-init_angle"></i> Angle</button><br>
@@ -333,18 +349,22 @@ input:checked + .slidersw:before {
 <div id="slave">
 <hr class="separator"><br>
 <div class="values">
-<span class="label">Angle2:</span><span id="AngleValue2">-180.00</span><span class="unit">deg</span><br>
-<span class="label">Throw2:</span><span id="ThrowValue2">100</span><span class="unit">mm</span>
+<span class="label">Angle2:</span><span id="AngleValue2">0.00</span><span class="unit">deg</span><br>
+<span class="label">Throw2:</span><span id="ThrowValue2">0</span><span class="unit">mm</span>
 <label class="switch"><input type="checkbox" id="sensor2" onclick="invertAngle(2)"><span class="slidersw round"></span></label>
 </div>
 <div class="values">
-<span class="label2">Max2:</span><span id="MaxThrowValue2">100</span><span class="unit">mm</span><br>
-<span class="label2">Min2:</span><span id="MinThrowValue2">-100</span><span class="unit">mm</span>
+<span class="label2">Max2:</span><span id="MaxThrowValue2">0</span><span class="unit">mm</span><br>
+<span class="label2">Min2:</span><span id="MinThrowValue2">0</span><span class="unit">mm</span>
 </div>
 <div class="buttons">
 <span class="label3">Differential</span><br><span id="DiffValue">0</span><span class="unit">%</span>
 </div>
 </div>
+</div>
+<div id="system">
+<p id="sysdata"></p>
+<a href="http://192.168.4.1/update"><button class="button button2" type="button">Update FW</button></a><br>
 </div>
 <div id="bottom"><a href="http://github.com/f5soh/aeromodeling-throw-meter"><i class="img-esplogo"></i></a></div>
 <script>
@@ -375,6 +395,7 @@ function toggleAudio() {
   beep(20, 200, 25); 
 }
 var slave_found = false;
+document.getElementById("system").style.display = "none";
 document.getElementById("calibrations").style.display = "none";
 document.getElementById("settings").style.display = "none";
 document.getElementById("measurements").style.display = "block";
@@ -406,6 +427,7 @@ function toggleSettings() {
   document.getElementById("settings").style.display = "block";
   document.getElementById("measurements").style.display = "none";
   document.getElementById("calibrations").style.display = "none";
+  document.getElementById("system").style.display = "none";
  }
 }
 function toggleCalibrations() {
@@ -413,13 +435,24 @@ function toggleCalibrations() {
   document.getElementById("calibrations").style.display = "block";
   document.getElementById("settings").style.display = "none";
   document.getElementById("measurements").style.display = "none";
+  document.getElementById("system").style.display = "none";
  }
+}
+function toggleSystem() {
+ if (document.getElementById("system").style.display == "none") {
+  document.getElementById("system").style.display = "block";
+  document.getElementById("calibrations").style.display = "none";
+  document.getElementById("settings").style.display = "none";
+  document.getElementById("measurements").style.display = "none";
+ }
+ getSysData();
 }
 function toggleMeasurements() {
  if (document.getElementById("measurements").style.display == "none") {
   document.getElementById("measurements").style.display = "block";
   document.getElementById("settings").style.display = "none";
   document.getElementById("calibrations").style.display = "none";
+  document.getElementById("system").style.display = "none";
  } 
  sendData(0);
 }
@@ -554,6 +587,22 @@ xhttp.onreadystatechange = function(event) {
 xhttp.open("GET", "readSettings", true);
 xhttp.send(null);
 beep(20, 180, 25);
+}
+
+function getSysData() {
+const xhttp = new XMLHttpRequest();
+xhttp.onreadystatechange = function(event) {
+ if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+  var str_in = this.responseText;
+  var words = str_in.split(':');
+  var sys_content = "<b>Free memory:</b> " + words[0] + " bytes</b>";
+  sys_content += "<br><b>SDK/Arduino version:</b> " + words[1] + "/" + words[2];
+  sys_content += "<br><b>FW version:</b> Wifi_Angle_meter_mma8452_esp01_" + words[3] + ".bin";
+  document.getElementById("sysdata").innerHTML = sys_content;
+ }
+};
+xhttp.open("GET", "readSysData", true);
+xhttp.send(null);
 }
 </script>
 </body></html>

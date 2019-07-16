@@ -146,6 +146,7 @@ void setup()
     server.on("/setSlaveData", handleSlaveData); // Receive sensor data from slave
     server.on("/readData", handleValues); // Send values to be displayed in webpage (master and slave if any)
     server.on("/readSettings", handleSettings);
+    server.on("/readSysData", handleSystemData);
     server.on("/generate_204", handleRoot); // Android captive portal. Maybe not needed. Might be handled by notFound handler.
     server.on("/fwlink", handleRoot); // Microsoft captive portal. Maybe not needed. Might be handled by notFound handler.
     server.onNotFound(handleNotFound);
@@ -243,6 +244,15 @@ void handleSettings()
               String(int(xoff_calibration)) + ":" + \
               String(int(yoff_calibration)) + ":" + \
               String(int(zoff_calibration)));
+}
+
+/** Send system data */
+void handleSystemData()
+{
+  String arduinover = ESP.getCoreVersion();
+  String sdkver = ESP.getSdkVersion();
+  arduinover.replace("_",".");
+  server.send(200, "text/plane", String(ESP.getFreeHeap()) + ":" + sdkver.substring(0,5) + ":" + arduinover + ":" + ESP.getSketchMD5().substring(0,6) );
 }
 
 /** Receive values from page */
