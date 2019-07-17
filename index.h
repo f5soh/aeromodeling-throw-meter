@@ -118,7 +118,6 @@ width : 80px;
 background-color : #4c86af;
 cursor : pointer;
 }
-
 .label, .label2, .label3, .label4 {
 display : inline-block;
 white-space : nowrap;
@@ -156,6 +155,9 @@ border-radius : 10px;
 background-color : #4c86af;
 width : 160px;
 cursor : pointer;
+}
+.button2 {
+width : 180px;
 }
 /* Svg icons */
 .icon-measurements, .icon-init_angle, .icon-minmax_reset, .icon-settings, .icon-calibrations, .icon-system, .img-esplogo {
@@ -367,7 +369,8 @@ input:checked + .slidersw:before {
 </div>
 <div id="system">
 <p id="sysdata"></p>
-<a href="http://192.168.4.1/update"><button class="button button2" type="button">Update FW</button></a><br>
+<a href="http://debat.local/update"><button class="button button2" type="button">Update FW</button></a>
+<a href="http://debat.local/wifi"><button class="button button2" type="button">Wifi config</button></a>
 </div>
 <div id="bottom"><a href="http://github.com/f5soh/aeromodeling-throw-meter"><i class="img-esplogo"></i></a></div>
 <script>

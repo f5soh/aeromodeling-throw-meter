@@ -49,11 +49,25 @@ HTTPClient http;
 IPAddress apIP(192, 168, 4, 1);
 IPAddress netMsk(255, 255, 255, 0);
 
+/* Don't set this wifi credentials. They are configurated at runtime and stored on EEPROM */
+char ssid[32]     = "";
+char password[32] = "";
+char softAP_ssid_eeprom[32] = "";
+
+/** Should I connect to WLAN asap? */
+boolean connect;
+
+/** Last time I tried to connect to WLAN */
+unsigned long lastConnectTry = 0;
+
+/** Current WLAN status */
+unsigned int status = WL_IDLE_STATUS;
+
 // 0 to 20.5dBm
-float outputPower    = 0;
+float outputPower   = 0;
 
 // initial value: device is master (AP) by default
-bool is_master       = true;
+bool is_master = true;
 String slaveDeviceIP = "";
 String data;
 unsigned long lastSent;
@@ -86,6 +100,12 @@ void setup()
   Serial.begin(9600);
   Serial.println("I2C config done");
 
+  // try to retrieve a custom softAP_ssid
+  loadCredentials();
+  if (strlen(softAP_ssid_eeprom) > 0) {
+    softAP_ssid = softAP_ssid_eeprom;
+  }
+
   bool use_password = true;
 
   // set WiFi to station mode and check if annother device is running as AP
@@ -98,7 +118,7 @@ void setup()
     Serial.print(n);
     Serial.println(" networks found");
     for (int i = 0; i < n; ++i) {
-      if (WiFi.SSID(i) == APSSID) {
+      if (WiFi.SSID(i) == softAP_ssid) {
         Serial.println("Master device found!");
         is_master    = false;
         use_password = (WiFi.encryptionType(i) != ENC_TYPE_NONE);
@@ -112,9 +132,9 @@ void setup()
     Serial.println("Connecting to AP...");
     // Connect to the AP device already running
     if (use_password) {
-      WiFi.begin(APSSID, APPSK);
+      WiFi.begin(softAP_ssid, APPSK);
     } else {
-      WiFi.begin(APSSID);
+      WiFi.begin(softAP_ssid);
     }
     while (WiFi.status() != WL_CONNECTED) {
       Serial.print(".");
@@ -147,11 +167,11 @@ void setup()
     server.on("/readData", handleValues); // Send values to be displayed in webpage (master and slave if any)
     server.on("/readSettings", handleSettings);
     server.on("/readSysData", handleSystemData);
+    server.on("/wifi", handleWifi);
+    server.on("/wifisave", handleWifiSave);
     server.on("/generate_204", handleRoot); // Android captive portal. Maybe not needed. Might be handled by notFound handler.
     server.on("/fwlink", handleRoot); // Microsoft captive portal. Maybe not needed. Might be handled by notFound handler.
     server.onNotFound(handleNotFound);
-
-    loadSettings();
   }
 
   httpUpdater.setup(&server);
@@ -161,6 +181,9 @@ void setup()
   // Will be set to min and save power
   WiFi.setOutputPower(outputPower);
 
+  // Request WLAN connect if there is a SSID
+  connect = strlen(ssid) > 0;
+
   // Sensor configuration
   mma.setDataRate(MMA_400hz);
   mma.setRange(MMA_RANGE_2G);
@@ -169,6 +192,16 @@ void setup()
   delay(500);
 
   init_angle();
+}
+
+void connectWifi()
+{
+  Serial.println("Connecting as wifi client...");
+  WiFi.disconnect();
+  WiFi.begin(ssid, password);
+  int connRes = WiFi.waitForConnectResult();
+  Serial.print("connRes: ");
+  Serial.println(connRes);
 }
 
 /**
@@ -183,6 +216,48 @@ void loop()
   compute_values(angle);
 
   if (is_master) {
+    if (connect) {
+      Serial.println("Connect requested");
+      connect = false;
+      connectWifi();
+      lastConnectTry = millis();
+    }
+    {
+      unsigned int s = WiFi.status();
+      if (s == 0 && millis() > (lastConnectTry + 60000)) {
+        /* If WLAN disconnected and idle try to connect */
+        /* Don't set retry time too low as retry interfere the softAP operation */
+        connect = true;
+      }
+      if (status != s) { // WLAN status change
+        Serial.print("Status: ");
+        Serial.println(s);
+        status = s;
+        if (s == WL_CONNECTED) {
+          /* Just connected to WLAN */
+          Serial.println("");
+          Serial.print("Connected to ");
+          Serial.println(ssid);
+          Serial.print("IP address: ");
+          Serial.println(WiFi.localIP());
+
+          // Setup MDNS responder
+          if (!MDNS.begin(myHostname)) {
+            Serial.println("Error setting up MDNS responder!");
+          } else {
+            Serial.println("mDNS responder started");
+            // Add service to MDNS-SD
+            MDNS.addService("http", "tcp", 80);
+          }
+        } else if (s == WL_NO_SSID_AVAIL) {
+          WiFi.disconnect();
+        }
+      }
+      if (s == WL_CONNECTED) {
+        MDNS.update();
+      }
+    }
+
     // DNS
     dnsServer.processNextRequest();
 
@@ -229,7 +304,7 @@ void handleValues()
               str_dual + ":" + \
               String(x, 4) + ":" + \
               String(y, 4) + ":" + \
-              String(z, 4)    
+              String(z, 4)
               );
 }
 
@@ -250,9 +325,10 @@ void handleSettings()
 void handleSystemData()
 {
   String arduinover = ESP.getCoreVersion();
-  String sdkver = ESP.getSdkVersion();
-  arduinover.replace("_",".");
-  server.send(200, "text/plane", String(ESP.getFreeHeap()) + ":" + sdkver.substring(0,5) + ":" + arduinover + ":" + ESP.getSketchMD5().substring(0,6) );
+  String sdkver     = ESP.getSdkVersion();
+
+  arduinover.replace("_", ".");
+  server.send(200, "text/plane", String(ESP.getFreeHeap()) + ":" + sdkver.substring(0, 5) + ":" + arduinover + ":" + ESP.getSketchMD5().substring(0, 6));
 }
 
 /** Receive values from page */
@@ -264,7 +340,7 @@ void handleData()
   String str_cmd   = server.arg("cmd");
   String str_chord = server.arg("chord");
   String str_min   = server.arg("min");
-  String str_max   = server.arg("max");  
+  String str_max   = server.arg("max");
   String str_xoff  = server.arg("xoff");
   String str_yoff  = server.arg("yoff");
   String str_zoff  = server.arg("zoff");
@@ -285,7 +361,7 @@ void handleData()
   // Serial.println("Xoff=" + String(x_offset, 4));
   // Serial.println("Yoff=" + str_yoff);
   // Serial.println("Zoff=" + str_zoff);
-  
+
   int cmd = str_cmd.toInt();
   switch (cmd) {
   case 200:
@@ -319,7 +395,7 @@ void handleData()
     break;
   case 306:
     loadCalibrations();
-    break;    
+    break;
   }
 
   server.send(200, "text/plain", "Master Ok");
@@ -414,6 +490,74 @@ void handleSlaveData()
   }
 }
 
+/** Wifi config page handler */
+void handleWifi()
+{
+  server.sendHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+  server.sendHeader("Pragma", "no-cache");
+  server.sendHeader("Expires", "-1");
+
+  String Page;
+  Page += F(
+    "<html><head></head><body>"
+    "<h1>Wifi config</h1><hr align='left' width='50%'>");
+  if (server.client().localIP() == apIP) {
+    Page += String(F("<p>You are connected through the soft AP: ")) + softAP_ssid + F("</p>");
+  } else {
+    Page += String(F("<p>You are connected through the wifi network: ")) + ssid + F("</p>");
+  }
+  Page +=
+    String(F(
+             "<table width='50%'><tr><th bgcolor='#99ff99' align='left'>SoftAP config</th><th bgcolor='#ff9900' align='left'>WLAN config</th></tr>\r\n"
+             "<tr><td bgcolor='#99ff99'>SSID ")) + String(softAP_ssid) +
+    F("</td><td bgcolor='#ff9900'>SSID ") + String(ssid) +
+    F("</td></tr>\r\n<tr><td bgcolor='#99ff99'>IP ") + toStringIp(WiFi.softAPIP()) +
+    F("</td><td bgcolor='#ff9900'>IP ") + toStringIp(WiFi.localIP()) +
+    F("</td></tr>\r\n</table>"
+      "\r\n<hr align='left' width='50%'>"
+      "<table width='50%'><tr><th align='left'>WLAN list (refresh if any missing)</th></tr>");
+  Serial.println("scan start");
+  int n = WiFi.scanNetworks();
+  Serial.println("scan done");
+  if (n > 0) {
+    for (int i = 0; i < n; i++) {
+      Page += String(F("\r\n<tr><td bgcolor='#ff9900'>SSID ")) + WiFi.SSID(i) + ((WiFi.encryptionType(i) == ENC_TYPE_NONE) ? F(" ") : F(" *")) + F(" (") + WiFi.RSSI(i) + F("dBm)</td></tr>");
+    }
+  } else {
+    Page += F("<tr><td>No WLAN found</td></tr>");
+  }
+  Page += F(
+    "</table>"
+    "\r\n<hr align='left' width='50%'><form method='POST' action='wifisave'>"
+    "<h4>Set custom AP SSID (default is 'debat'):</h4>"
+    "<input type='text' placeholder='AP_SSID' name='s'/>"
+    "<h4>Connect to network:</h4>"
+    "<input type='text' placeholder='network' name='n'/>"
+    "<br /><input type='password' placeholder='password' name='p'/>"
+    "<br /><input type='submit' value='Store Wifi settings'/></form>"
+    "<p>You may want to <a href='/'>return to the ESP Angle meter page</a>.</p>"
+    "</body></html>");
+  server.send(200, "text/html", Page);
+  server.client().stop(); // Stop is needed because we sent no content length
+}
+
+/** Handle the WLAN save form and redirect to WLAN config page again */
+void handleWifiSave()
+{
+  Serial.println("Wifi save");
+  server.arg("s").toCharArray(softAP_ssid_eeprom, sizeof(softAP_ssid_eeprom) - 1);
+  server.arg("n").toCharArray(ssid, sizeof(ssid) - 1);
+  server.arg("p").toCharArray(password, sizeof(password) - 1);
+  server.sendHeader("Location", "wifi", true);
+  server.sendHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+  server.sendHeader("Pragma", "no-cache");
+  server.sendHeader("Expires", "-1");
+  server.send(302, "text/plain", ""); // Empty content inhibits Content-length header so we have to close the socket ourselves.
+  server.client().stop(); // Stop is needed because we sent no content length
+  saveCredentials();
+  connect = strlen(ssid) > 0; // Request WLAN connect with new credentials if there is a SSID
+}
+
 void handleNotFound()
 {
   if (captivePortal()) { // If captive portal redirect instead of displaying the error page.
@@ -465,16 +609,16 @@ double read_angle()
     z_accum += z;
   }
 
-  x = x_accum / NUM_SAMPLES;
-  y = y_accum / NUM_SAMPLES;
-  z = z_accum / NUM_SAMPLES;
+  x  = x_accum / NUM_SAMPLES;
+  y  = y_accum / NUM_SAMPLES;
+  z  = z_accum / NUM_SAMPLES;
 
   // apply g offset
   x -= x_offset;
   y -= y_offset;
   z -= z_offset;
-  
-  //Serial.println("Samples: " + String(x,3) + ":" + String(y,3) + ":" + String(z, 3));
+
+  // Serial.println("Samples: " + String(x,3) + ":" + String(y,3) + ":" + String(z, 3));
   return atan2(y, z) / M_PI * 180;
 }
 
@@ -552,6 +696,7 @@ String toStringIp(IPAddress ip)
 /** Load settings from EEPROM */
 void loadSettings()
 {
+  // 4 + 4 + 4
   EEPROM.begin(512);
   EEPROM.get(0, corde);
   EEPROM.get(0 + sizeof(corde), min_setting);
@@ -570,6 +715,7 @@ void loadSettings()
 /** Save settings to EEPROM */
 void saveSettings()
 {
+  // 4 + 4 + 4
   Serial.println("Save settings: " + String(corde) + "/" + String(min_setting) + "/" + String(max_setting));
   EEPROM.begin(512);
   EEPROM.put(0, corde);
@@ -584,8 +730,9 @@ void saveSettings()
 /** Load calibrations from EEPROM */
 void loadCalibrations()
 {
+  // 4 + 4 + 4
   EEPROM.begin(512);
-  EEPROM.get(32, xoff_calibration );
+  EEPROM.get(32, xoff_calibration);
   EEPROM.get(32 + sizeof(xoff_calibration), yoff_calibration);
   EEPROM.get(32 + sizeof(xoff_calibration) + sizeof(yoff_calibration), zoff_calibration);
   char ok[2 + 1];
@@ -602,6 +749,7 @@ void loadCalibrations()
 /** Save calibrations to EEPROM */
 void saveCalibrations()
 {
+  // 4 + 4 + 4
   Serial.println("Save calibrations: " + String(xoff_calibration) + "/" + String(yoff_calibration) + "/" + String(zoff_calibration));
   EEPROM.begin(512);
   EEPROM.put(32, xoff_calibration);
@@ -609,6 +757,41 @@ void saveCalibrations()
   EEPROM.put(32 + sizeof(xoff_calibration) + sizeof(yoff_calibration), zoff_calibration);
   char ok[2 + 1] = "OK";
   EEPROM.put(32 + sizeof(xoff_calibration) + sizeof(yoff_calibration) + sizeof(zoff_calibration), ok);
+  EEPROM.commit();
+  EEPROM.end();
+}
+
+/** Load WLAN credentials and AP_ssid from EEPROM */
+void loadCredentials()
+{
+  // 32 + 32 + 32
+  EEPROM.begin(512);
+  EEPROM.get(64, ssid);
+  EEPROM.get(64 + sizeof(ssid), password);
+  EEPROM.get(64 + sizeof(ssid) + sizeof(password), softAP_ssid_eeprom);
+  char ok[2 + 1];
+  EEPROM.get(64 + sizeof(ssid) + sizeof(password) + sizeof(softAP_ssid_eeprom), ok);
+  EEPROM.end();
+  if (String(ok) != String("OK")) {
+    ssid[0]     = 0;
+    password[0] = 0;
+    softAP_ssid_eeprom[0] = 0;
+  }
+  Serial.println("Recovered credentials:");
+  Serial.println(ssid);
+  Serial.println(strlen(password) > 0 ? "********" : "<no password>");
+}
+
+/** Store WLAN credentials and AP_ssid to EEPROM */
+void saveCredentials()
+{
+  // 32 + 32 + 32
+  EEPROM.begin(512);
+  EEPROM.put(64, ssid);
+  EEPROM.put(64 + sizeof(ssid), password);
+  EEPROM.put(64 + sizeof(ssid) + sizeof(password), softAP_ssid_eeprom);
+  char ok[2 + 1] = "OK";
+  EEPROM.put(64 + sizeof(ssid) + sizeof(password) + sizeof(softAP_ssid_eeprom), ok);
   EEPROM.commit();
   EEPROM.end();
 }
