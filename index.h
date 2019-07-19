@@ -43,12 +43,6 @@ display : none;
 #sysdata {
 font : 1.5em sans-serif; 
 }
-#chord {
-display : inline-block;
-}
-#minmax {
-display : inline-block;
-}
 #ChordValue, #AngleValue, #MinLimitValue, #MaxLimitValue, #ThrowValue, #MinThrowValue, #MaxThrowValue, #AngleValue2, #ThrowValue2, #MinThrowValue2, #MaxThrowValue2, #DiffValue, #XValue, #YValue, #ZValue, #XOffsetValue, #YOffsetValue, #ZOffsetValue {
 text-align : right;
 display : inline-block;
@@ -199,6 +193,9 @@ content : url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E
 .slider, .slider2 {
   -webkit-appearance: none;
   width: 560px;
+  width: -webkit-calc(100% - 340px);
+  width:    -moz-calc(100% - 340px);
+  width:         calc(100% - 340px);
   height: 10px;
   border-radius: 5px;
   background: #d3d3d3;
@@ -209,6 +206,9 @@ content : url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E
 }
 .slider2 {
   width: 450px;
+  width: -webkit-calc(100% - 450px);
+  width:    -moz-calc(100% - 450px);
+  width:         calc(100% - 450px);
 }
 .slider:hover, .slider2:hover {
   opacity: 1;
@@ -296,21 +296,17 @@ input:checked + .slidersw:before {
 </div>
 </div>
 <div id="settings">
- <div id="chord">
   <div class="slidecontainer">
    <span class="label">Chord:</span><span id="ChordValue">50</span><span class="unit">mm</span>
    <input type="range" min="1" max="200" value="50" class="slider" id="Chord">
   </div>
- </div>
- <div id="minmax">
   <div class="slidecontainer">
    <span class="label">Min:</span><span id="MinLimitValue">50</span><span class="unit">mm</span>
    <input type="range" min="0" max="200" value="25" class="slider" id="MinLimit">
   </div>
-  <div class="slidecontainer">
-   <span class="label">Max:</span><span id="MaxLimitValue">50</span><span class="unit">mm</span>
-   <input type="range" min="0" max="200" value="25" class="slider" id="MaxLimit">
-  </div>
+ <div class="slidecontainer">
+  <span class="label">Max:</span><span id="MaxLimitValue">50</span><span class="unit">mm</span>
+  <input type="range" min="0" max="200" value="25" class="slider" id="MaxLimit">
  </div>
  <div class="buttons">
   <button class="button button2" type="button" onclick="getSettings(1)">Load</button>
