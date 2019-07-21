@@ -112,7 +112,7 @@ width : 80px;
 background-color : #4c86af;
 cursor : pointer;
 }
-.label, .label2, .label3, .label4 {
+.label, .label2, .label3, .label4, .label5 {
 display : inline-block;
 white-space : nowrap;
 text-align : right;
@@ -128,6 +128,9 @@ width : 150px;
 }
 .label4 {
 width : 60px;
+}
+.label5 {
+width : 130px;
 }
 .unit {
 display : inline-block;
@@ -283,6 +286,54 @@ input:checked + .slidersw:before {
 .slidersw.round:before {
   border-radius: 50%;
 }
+/* Radio */
+.radiocontainer {
+  display: inline-block;
+  position: relative;
+  padding: 6px;
+  padding-left: 50px;
+  margin: 6px;
+  cursor: pointer;
+  font-size : 1.5em;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.radiocontainer input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+.checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 40px;
+  width: 40px;
+  background-color: #cdf8fd;
+  border-radius: 50%;
+}
+.radiocontainer input:checked + .checkmark {
+  background-color: #4c86af;
+}
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+.radiocontainer input:checked + .checkmark:after {
+  display: block;
+}
+.radiocontainer .checkmark:after {
+ top: 9px;
+ left: 9px;
+ width: 18px;
+ height: 18px;
+ border-radius: 50%;
+ border: white solid 2px;
+ background: black;
+}
 </style>
 <title>ESP Angle meter</title>
 </head><body  onload="getSettings(0)">
@@ -296,14 +347,14 @@ input:checked + .slidersw:before {
 </div>
 </div>
 <div id="settings">
-  <div class="slidecontainer">
-   <span class="label">Chord:</span><span id="ChordValue">50</span><span class="unit">mm</span>
-   <input type="range" min="1" max="200" value="50" class="slider" id="Chord">
-  </div>
-  <div class="slidecontainer">
-   <span class="label">Min:</span><span id="MinLimitValue">50</span><span class="unit">mm</span>
-   <input type="range" min="0" max="200" value="25" class="slider" id="MinLimit">
-  </div>
+ <div class="slidecontainer">
+  <span class="label">Chord:</span><span id="ChordValue">50</span><span class="unit">mm</span>
+  <input type="range" min="1" max="200" value="50" class="slider" id="Chord">
+ </div>
+ <div class="slidecontainer">
+  <span class="label">Min:</span><span id="MinLimitValue">50</span><span class="unit">mm</span>
+  <input type="range" min="0" max="200" value="25" class="slider" id="MinLimit">
+ </div>
  <div class="slidecontainer">
   <span class="label">Max:</span><span id="MaxLimitValue">50</span><span class="unit">mm</span>
   <input type="range" min="0" max="200" value="25" class="slider" id="MaxLimit">
@@ -311,6 +362,10 @@ input:checked + .slidersw:before {
  <div class="buttons">
   <button class="button button2" type="button" onclick="getSettings(1)">Load</button>
   <button class="button button2" type="button" onclick="sendData(301)">Save</button>
+  <span class="label5">Rot. angle: </span>
+  <label class="radiocontainer">X axis<input type="radio" id="X" checked="checked" name="axis"><span class="checkmark"></span></label>
+  <label class="radiocontainer">Y axis<input type="radio" id="Y" checked="none" name="axis"><span class="checkmark"></span></label>
+  <label class="radiocontainer">Z axis<input type="radio" id="Z" checked="none" name="axis"><span class="checkmark"></span></label>
  </div>
 </div>
 <div id="calibrations">
@@ -469,8 +524,10 @@ if (sensor == 1) {
 };
 
 function sendData(value) {
+var axisChecked = 0;
+if (Y.checked) {axisChecked = 1;} else if (Z.checked) {axisChecked = 2;}
 const xhttpcmd = new XMLHttpRequest();
-xhttpcmd.open("GET", "setData?cmd=" + value + "&chord="+ chord_slider.value + "&min=" + min_slider.value + "&max=" + max_slider.value + "&xoff=" + xoffset_slider.value + "&yoff=" + yoffset_slider.value + "&zoff=" + zoffset_slider.value, true);
+xhttpcmd.open("GET", "setData?cmd=" + value + "&chord="+ chord_slider.value + "&min=" + min_slider.value + "&max=" + max_slider.value + "&xoff=" + xoffset_slider.value + "&yoff=" + yoffset_slider.value + "&zoff=" + zoffset_slider.value + "&axis=" + axisChecked, true);
 xhttpcmd.send(null);
 beep(20, 180, 25); 
 }
@@ -575,14 +632,21 @@ xhttp.onreadystatechange = function(event) {
     min_slider.value = words[1];
     document.getElementById("MaxLimitValue").innerHTML = words[2];
     max_slider.value = words[2];
+    if (words[3] == "0") {
+      document.getElementById("X").checked = "true";
+    } else if (words[3] == "1") {
+      document.getElementById("Y").checked = "true"; 
+    } else if (words[3] == "2") {
+      document.getElementById("Z").checked = "true";
+    }
   }
   if ((state == 0) || (state == 2)) {
-    document.getElementById("XOffsetValue").innerHTML = (parseFloat(words[3]) / 10000).toFixed(4);
-    document.getElementById("YOffsetValue").innerHTML = (parseFloat(words[4]) / 10000).toFixed(4);
-    document.getElementById("ZOffsetValue").innerHTML = (parseFloat(words[5]) / 10000).toFixed(4);
-    xoffset_slider.value = words[3];
-    yoffset_slider.value = words[4];
-    zoffset_slider.value = words[5];
+    document.getElementById("XOffsetValue").innerHTML = (parseFloat(words[4]) / 10000).toFixed(4);
+    document.getElementById("YOffsetValue").innerHTML = (parseFloat(words[5]) / 10000).toFixed(4);
+    document.getElementById("ZOffsetValue").innerHTML = (parseFloat(words[6]) / 10000).toFixed(4);
+    xoffset_slider.value = words[4];
+    yoffset_slider.value = words[5];
+    zoffset_slider.value = words[6];
   } 
  }
 };

@@ -81,6 +81,8 @@ float angle_web, throw_web, minthrow_web = 0, maxthrow_web = 0;
 String str_angle2_web = "0", str_throw2_web = "0", str_minthrow2_web = "0", str_maxthrow2_web = "0", str_dual = "0";
 int corde = 50, min_setting = 0, max_setting = 0, xoff_calibration = 0, yoff_calibration = 0, zoff_calibration = 0;
 float x_offset = 0, y_offset = 0, z_offset = 0;
+enum { X_AXIS = 0, Y_AXIS = 1, Z_AXIS = 2 };
+byte axis;
 bool invert_angle = false;
 
 float x, y, z; // g measurements
@@ -316,6 +318,7 @@ void handleSettings()
   server.send(200, "text/plane", String(int(corde)) + ":" + \
               String(int(min_setting)) + ":" + \
               String(int(max_setting)) + ":" + \
+              String(axis) + ":" + \
               String(int(xoff_calibration)) + ":" + \
               String(int(yoff_calibration)) + ":" + \
               String(int(zoff_calibration)));
@@ -337,33 +340,26 @@ void handleData()
   if (!is_master) {
     return;
   }
-  String str_cmd   = server.arg("cmd");
-  String str_chord = server.arg("chord");
-  String str_min   = server.arg("min");
-  String str_max   = server.arg("max");
-  String str_xoff  = server.arg("xoff");
-  String str_yoff  = server.arg("yoff");
-  String str_zoff  = server.arg("zoff");
-  corde = str_chord.toInt();
-  min_setting = str_min.toInt();
-  max_setting = str_max.toInt();
-  xoff_calibration = str_xoff.toInt();
-  yoff_calibration = str_yoff.toInt();
-  zoff_calibration = str_zoff.toInt();
+  axis  = server.arg("axis").toInt();
+  corde = server.arg("chord").toInt();
+  min_setting = server.arg("min").toInt();
+  max_setting = server.arg("max").toInt();
+  xoff_calibration = server.arg("xoff").toInt();
+  yoff_calibration = server.arg("yoff").toInt();
+  zoff_calibration = server.arg("zoff").toInt();
   x_offset = (float)xoff_calibration / 10000;
   y_offset = (float)yoff_calibration / 10000;
   z_offset = (float)zoff_calibration / 10000;
 
-  // Serial.println("Cmd=" + str_cmd);
-  // Serial.println("Chord=" + str_chord);
-  // Serial.println("Min=" + str_min);
-  // Serial.println("Max=" + str_max);
+  // Serial.println("Cmd=" + server.arg("cmd"));
+  // Serial.println("Chord=" + server.arg("chord"));
+  // Serial.println("Min=" + server.arg("min"));
+  // Serial.println("Max=" + server.arg("max"));
   // Serial.println("Xoff=" + String(x_offset, 4));
-  // Serial.println("Yoff=" + str_yoff);
-  // Serial.println("Zoff=" + str_zoff);
+  // Serial.println("Yoff=" + String(y_offset, 4));
+  // Serial.println("Zoff=" + String(z_offset, 4));
 
-  int cmd = str_cmd.toInt();
-  switch (cmd) {
+  switch (server.arg("cmd").toInt()) {
   case 200:
     invert_angle = false;
     break;
@@ -371,10 +367,10 @@ void handleData()
     invert_angle = true;
     break;
   case 202:
-    sendToSlave(corde, 202); // slave: invert_angle = false;
+    sendToSlave(corde, axis, 202); // slave: invert_angle = false;
     break;
   case 203:
-    sendToSlave(corde, 203); // slave: invert_angle = true;
+    sendToSlave(corde, axis, 203); // slave: invert_angle = true;
     break;
   case 301:
     saveSettings();
@@ -384,11 +380,11 @@ void handleData()
     break;
   case 303:
     reset_minmax();
-    sendToSlave(corde, cmd);
+    sendToSlave(corde, axis, 303);
     break;
   case 304:
     init_angle();
-    sendToSlave(corde, cmd);
+    sendToSlave(corde, axis, 304);
     break;
   case 305:
     saveCalibrations();
@@ -412,6 +408,7 @@ void prepareSlaveData()
   data += "&minthrow2=" + String(minthrow_web, 1);
   data += "&maxthrow2=" + String(maxthrow_web, 1);
   data += "&chord=" + String(int(corde));
+  data += "&axis=" + String(axis);
   // Serial.println("- data stream: "+data);
 }
 
@@ -427,14 +424,14 @@ void sendSlaveData()
   http.end();
 }
 
-void sendToSlave(int chord, int cmd)
+void sendToSlave(int chord, byte axis, int cmd)
 {
   String slaveURL = "http://" + slaveDeviceIP + "/setData";
 
   http.setTimeout(200);
   http.begin(slaveURL);
   http.addHeader("Content-Type", "application/x-www-form-urlencoded");
-  http.POST("chord=" + String(int(chord)) + "&cmd=" + String(int(cmd)));
+  http.POST("chord=" + String(int(chord)) + "&axis=" + String(axis) + "&cmd=" + String(int(cmd)));
   // http.writeToStream(&Serial);
   http.end();
   // Serial.println("sendToSlave " + slaveURL + " " + chord + "cmd:" + String(int(cmd)));
@@ -442,10 +439,10 @@ void sendToSlave(int chord, int cmd)
 
 void handleMasterData()
 {
-  String str = server.arg("cmd");
-  int cmd    = str.toInt();
+  corde = server.arg("chord").toInt();
+  axis  = server.arg("axis").toInt();
 
-  switch (cmd) {
+  switch (server.arg("cmd").toInt()) {
   case 202:
     invert_angle = false;
     break;
@@ -459,12 +456,10 @@ void handleMasterData()
     init_angle();
     break;
   }
-  str = server.arg("chord");
 
   server.send(200, "text/plain", "Slave Ok");
   server.client().stop();
 
-  corde = str.toInt();
   // Serial.println("Received corde: " + String(corde) + " cmd=" + str);
 }
 
@@ -479,14 +474,13 @@ void handleSlaveData()
   str_throw2_web    = server.arg("throw2");
   str_minthrow2_web = server.arg("minthrow2");
   str_maxthrow2_web = server.arg("maxthrow2");
-  String chord_from_slave = server.arg("chord");
 
   server.send(200, "text/plain", "Master Ok");
   server.client().stop();
 
-  if (chord_from_slave.toInt() != corde) {
+  if ((server.arg("chord").toInt() != corde) || (server.arg("axis").toInt() != axis)) {
     delay(10);
-    sendToSlave(corde, 0);
+    sendToSlave(corde, axis, 0);
   }
 }
 
@@ -619,7 +613,18 @@ double read_angle()
   z -= z_offset;
 
   // Serial.println("Samples: " + String(x,3) + ":" + String(y,3) + ":" + String(z, 3));
-  return atan2(y, z) / M_PI * 180;
+
+  switch (axis) {
+  case Y_AXIS:
+    return atan2(x, z) / M_PI * 180;
+
+  case Z_AXIS:
+    return atan2(x, y) / M_PI * 180;
+
+  case X_AXIS:
+  default:
+    return atan2(y, z) / M_PI * 180;
+  }
 }
 
 void compute_values(float angle)
@@ -696,33 +701,37 @@ String toStringIp(IPAddress ip)
 /** Load settings from EEPROM */
 void loadSettings()
 {
-  // 4 + 4 + 4
+  // 4 + 4 + 4 + 1
   EEPROM.begin(512);
   EEPROM.get(0, corde);
   EEPROM.get(0 + sizeof(corde), min_setting);
   EEPROM.get(0 + sizeof(corde) + sizeof(min_setting), max_setting);
+  EEPROM.get(0 + sizeof(corde) + sizeof(min_setting) + sizeof(max_setting), axis);
   char ok[2 + 1];
-  EEPROM.get(0 + sizeof(corde) + sizeof(min_setting) + sizeof(max_setting), ok);
+  EEPROM.get(0 + sizeof(corde) + sizeof(min_setting) + sizeof(max_setting) + sizeof(axis), ok);
   EEPROM.end();
   if (String(ok) != String("OK")) {
+    // Something is wrong, back to defaults
     corde = 50;
     min_setting = 15;
     max_setting = 15;
+    axis  = X_AXIS;
   }
-  Serial.println("Load settings: " + String(corde) + "/" + String(min_setting) + "/" + String(max_setting));
+  Serial.println("Load settings: " + String(corde) + "/" + String(min_setting) + "/" + String(max_setting) + "/" + axis + "/" + String(sizeof(axis)));
 }
 
 /** Save settings to EEPROM */
 void saveSettings()
 {
-  // 4 + 4 + 4
-  Serial.println("Save settings: " + String(corde) + "/" + String(min_setting) + "/" + String(max_setting));
+  // 4 + 4 + 4 + 1
+  Serial.println("Save settings: " + String(corde) + "/" + String(min_setting) + "/" + String(max_setting) + "/" + axis);
   EEPROM.begin(512);
   EEPROM.put(0, corde);
   EEPROM.put(0 + sizeof(corde), min_setting);
   EEPROM.put(0 + sizeof(corde) + sizeof(min_setting), max_setting);
+  EEPROM.put(0 + sizeof(corde) + sizeof(min_setting) + sizeof(max_setting), axis);
   char ok[2 + 1] = "OK";
-  EEPROM.put(0 + sizeof(corde) + sizeof(min_setting) + sizeof(max_setting), ok);
+  EEPROM.put(0 + sizeof(corde) + sizeof(min_setting) + sizeof(max_setting) + sizeof(axis), ok);
   EEPROM.commit();
   EEPROM.end();
 }
