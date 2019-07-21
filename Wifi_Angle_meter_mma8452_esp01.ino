@@ -554,10 +554,8 @@ void handleWifiSave()
 
 void handleNotFound()
 {
-  if (captivePortal()) { // If captive portal redirect instead of displaying the error page.
-    return;
-  }
   String message = F("File Not Found\n\n");
+
   message += F("URI: ");
   message += server.uri();
   message += F("\nMethod: ");
@@ -573,6 +571,8 @@ void handleNotFound()
   server.sendHeader("Pragma", "no-cache");
   server.sendHeader("Expires", "-1");
   server.send(404, "text/plain", message);
+  // Print uri not handled
+  Serial.println(server.uri());
 }
 
 /** Redirect to captive portal if we got a request for another domain. Return true in that case so the page handler do not try to handle the request again. */
