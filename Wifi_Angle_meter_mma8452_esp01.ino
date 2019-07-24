@@ -23,9 +23,17 @@
 
 #include "index.h" // HTML webpage contents with javascripts
 
+ADC_MODE(ADC_VCC);
+
+// Battery settings
+#define ADC_CORRECTION 0.95
+#define LIPO_MAX       4.2
+#define LIPO_MIN       3.7
+#define DROP_VOLT      1.0  // 1n4148 diode
+
 #ifndef APSSID
-#define APSSID "debat"
-#define APPSK  "1234"
+#define APSSID         "debat"
+#define APPSK          "1234"
 #endif
 
 const char *softAP_ssid     = APSSID;
@@ -73,7 +81,9 @@ String data;
 unsigned long lastSent;
 unsigned long lastReceived;
 unsigned long sendEvery_ms = 300;
-unsigned long timeOut_ms = 1500;
+unsigned long timeOut_ms   = 1500;
+unsigned long batCheck_ms  = 60000;
+unsigned long lastBatCheck;
 
 MMA8452 mma;
 double ref_angle, last_angle;
@@ -84,6 +94,9 @@ float x_offset = 0, y_offset = 0, z_offset = 0;
 enum { X_AXIS = 0, Y_AXIS = 1, Z_AXIS = 2 };
 byte axis;
 bool invert_angle = false;
+
+int battery_used_percent = 0;
+float vcc;
 
 float x, y, z; // g measurements
 
@@ -194,6 +207,7 @@ void setup()
   delay(500);
 
   init_angle();
+  readBattery();
 }
 
 void connectWifi()
@@ -278,6 +292,12 @@ void loop()
     }
   }
 
+  // Check battery
+  if ((millis() - lastBatCheck) > batCheck_ms) {
+    lastBatCheck = millis();
+    readBattery();
+  }
+
   // Web server
   server.handleClient();
 }
@@ -306,7 +326,8 @@ void handleValues()
               str_dual + ":" + \
               String(x, 4) + ":" + \
               String(y, 4) + ":" + \
-              String(z, 4)
+              String(z, 4) + ":" + \
+              String(battery_used_percent)
               );
 }
 
@@ -331,7 +352,7 @@ void handleSystemData()
   String sdkver     = ESP.getSdkVersion();
 
   arduinover.replace("_", ".");
-  server.send(200, "text/plane", String(ESP.getFreeHeap()) + ":" + sdkver.substring(0, 5) + ":" + arduinover + ":" + ESP.getSketchMD5().substring(0, 6));
+  server.send(200, "text/plane", String(ESP.getFreeHeap()) + ":" + sdkver.substring(0, 5) + ":" + arduinover + ":" + ESP.getSketchMD5().substring(0, 6) + ":" + String(vcc, 2));
 }
 
 /** Receive values from page */
@@ -656,6 +677,15 @@ void compute_values(float angle)
     maxthrow_web = throw_web;
   } else if (throw_web < minthrow_web) {
     minthrow_web = throw_web;
+  }
+}
+
+void readBattery()
+{
+  vcc = (((float)ESP.getVcc()) / 1024) * ADC_CORRECTION;
+  float volt_diff = ((LIPO_MAX - DROP_VOLT) - vcc);
+  if (volt_diff > 0) {
+    battery_used_percent = ((volt_diff * 100) / (LIPO_MAX - LIPO_MIN));
   }
 }
 

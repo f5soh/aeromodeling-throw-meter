@@ -40,6 +40,35 @@ display : none;
 background-color : #9f9f9f;
 display : none;
 }
+#battery {
+background-color : #66CD00;
+border : 2px solid #000;
+height : 48px;
+display : inline-block;
+float : right;
+width : 24px;
+margin : 6px;
+margin-top : 10px;
+margin-right : 10px;
+border-radius : 6px;
+}
+#battery-used {
+background-color : white;
+border-radius : 4px 4px 0px 0px;
+height : 25%;
+}
+#battery-used:after {
+background-color : black;
+border : 2px solid black;
+content : "";
+display : block;
+height : 2px;
+width : 8px;
+position : relative;
+left : 6px;
+top : -6px;
+border-radius : 4px;
+}
 #sysdata {
 font : 1.5em sans-serif; 
 }
@@ -344,6 +373,7 @@ input:checked + .slidersw:before {
 <button class="tabbutton tabcalibrations" type="button" onclick="toggleCalibrations()"><i class="icon-calibrations"></i> Calibrations</button>
 <button class="tabbutton tabsystem" type="button" onclick="toggleSystem()"><i class="icon-system"></i> System</button>
 <button class="tabbuttonaudio" type="button" onclick="toggleAudio()"><i class="icon-audio_off" id="audio_off"></i><i class="icon-audio_on" id="audio_on"></i></button>
+<div id="battery"><div id="battery-used"></div></div>
 </div>
 </div>
 <div id="settings">
@@ -394,8 +424,8 @@ input:checked + .slidersw:before {
 <label class="switch"><input type="checkbox" id="sensor1" onclick="invertAngle(1)"><span class="slidersw round"></span></label>
 </div>
 <div class="values">
-<span class="label2">Max:</span><span id="MaxThrowValue">0</span><span class="unit">mm</span><br> 
-<span class="label2">Min:</span><span id="MinThrowValue">0</span><span class="unit">mm</span> 
+<span class="label2">Max:</span><span id="MaxThrowValue">0</span><span class="unit">mm</span><br>
+<span class="label2">Min:</span><span id="MinThrowValue">0</span><span class="unit">mm</span>
 </div>
 <div class="buttons">
 <button class="button" type="button" onclick="sendData(304)"><i class="icon-init_angle"></i> Angle</button><br>
@@ -433,7 +463,7 @@ document.getElementById("audio_off").style.display = "block";
 document.getElementById("audio_on").style.display = "none";
 
 function checkAudioApi(){ 
- if(self.AudioContext){AudioAPI=self.AudioContext;canPlay=true;return;} 
+ if(self.AudioContext){AudioAPI=self.AudioContext;canPlay=true;return;}
  else if (self.webkitAudioContext){AudioAPI=self.webkitAudioContext;canPlay=true;return;}
  else{canPlay=false;return;}
 }
@@ -449,7 +479,7 @@ function toggleAudio() {
   } else {
     document.getElementById("audio_off").style.display = "block";document.getElementById("audio_on").style.display = "none";audioEnabled = false;
   }
-  beep(20, 200, 25); 
+  beep(20, 200, 25);
 }
 var slave_found = false;
 document.getElementById("system").style.display = "none";
@@ -612,7 +642,19 @@ xhttp.onreadystatechange = function(event) {
   }
   document.getElementById("XValue").innerHTML = words[10];
   document.getElementById("YValue").innerHTML = words[11];
-  document.getElementById("ZValue").innerHTML = words[12]; 
+  document.getElementById("ZValue").innerHTML = words[12];
+  document.getElementById("battery-used").style.height = words[13] + "%";
+  var battery_used = parseInt(words[13]);
+  if (battery_used > 90) {
+    document.getElementById("battery").style.backgroundColor = "red";
+    if (battery_used > 95) {document.getElementById("battery-used").style.height = "90%";alert("Please charge battery!!!!");}
+  } else if (battery_used > 70) {
+    document.getElementById("battery").style.backgroundColor = "orange";
+  } else if (battery_used > 20) {
+    document.getElementById("battery").style.backgroundColor = "#66b000";
+  } else {
+    document.getElementById("battery").style.backgroundColor = "#66cd00";
+  }
  }
 };
 xhttp.open("GET", "readData", true);
@@ -664,6 +706,7 @@ xhttp.onreadystatechange = function(event) {
   var sys_content = "<b>Free memory:</b> " + words[0] + " bytes</b>";
   sys_content += "<br><b>SDK/Arduino version:</b> " + words[1] + "/" + words[2];
   sys_content += "<br><b>FW version:</b> Wifi_Angle_meter_mma8452_esp01_" + words[3] + ".bin";
+  sys_content += "<br><b>ESP voltage:</b> "+ words[4] + "V";
   document.getElementById("sysdata").innerHTML = sys_content;
  }
 };
