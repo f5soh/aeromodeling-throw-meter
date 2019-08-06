@@ -81,9 +81,10 @@ String data;
 unsigned long lastSent;
 unsigned long lastReceived;
 unsigned long sendEvery_ms = 300;
-unsigned long timeOut_ms   = 1500;
-unsigned long batCheck_ms  = 60000;
+unsigned long timeOut_ms = 1500;
+unsigned long batCheck_ms = 60000;
 unsigned long lastBatCheck;
+unsigned long last_loop_ms, loop_ms, loop_avg_ms = 0, loop_max_ms = 0;
 
 MMA8452 mma;
 double ref_angle, last_angle;
@@ -208,6 +209,8 @@ void setup()
 
   init_angle();
   readBattery();
+
+  last_loop_ms = millis();
 }
 
 void connectWifi()
@@ -278,17 +281,21 @@ void loop()
     dnsServer.processNextRequest();
 
     // Check if slave still here
-    if ((millis() - lastReceived) > timeOut_ms) {
+    if (((millis() - lastReceived) > timeOut_ms) && (str_dual == "1")) {
       str_dual = "0"; // One sensor from master
-    } else {
+      Serial.println("Slave lost");
+    } else if (((millis() - lastReceived) < timeOut_ms) && (str_dual == "0")) {
       str_dual = "1"; // Dual sensor
+      Serial.println("Slave found");
     }
   } else {
     // Slave send data to master
     if ((millis() - lastSent) > sendEvery_ms) {
-      prepareSlaveData();
-      sendSlaveData();
-      lastSent = millis();
+      if (WiFi.status() == WL_CONNECTED) {
+        prepareSlaveData();
+        sendSlaveData();
+        lastSent = millis();
+      }
     }
   }
 
@@ -300,6 +307,14 @@ void loop()
 
   // Web server
   server.handleClient();
+
+  loop_ms      = (millis() - last_loop_ms);
+  loop_avg_ms  = (float)(loop_avg_ms * 0.8) + (float)(loop_ms * 0.2);
+  if (loop_ms > loop_max_ms) {
+    loop_max_ms = loop_ms;
+  }
+  last_loop_ms = millis();
+  // Serial.println("Loop :" + String(loop_ms) + "/" + String(loop_avg_ms) + "/" + String(loop_max_ms) + " ms");
 }
 
 /** Send main webpage */
@@ -352,7 +367,8 @@ void handleSystemData()
   String sdkver     = ESP.getSdkVersion();
 
   arduinover.replace("_", ".");
-  server.send(200, "text/plane", String(ESP.getFreeHeap()) + ":" + sdkver.substring(0, 5) + ":" + arduinover + ":" + ESP.getSketchMD5().substring(0, 6) + ":" + String(vcc, 2));
+  server.send(200, "text/plane", String(ESP.getFreeHeap()) + ":" + sdkver.substring(0, 5) + ":" + arduinover + ":" + ESP.getSketchMD5().substring(0, 6) + ":" + String(vcc, 2) + ":" + \
+              String(loop_ms) + ":" + String(loop_avg_ms) + ":" + String(loop_max_ms));
 }
 
 /** Receive values from page */
@@ -437,7 +453,6 @@ void sendSlaveData()
 {
   String serverURLData = "http://" + toStringIp(apIP) + "/setSlaveData";
 
-  http.setTimeout(200);
   http.begin(serverURLData);
   http.addHeader("Content-Type", "application/x-www-form-urlencoded");
   http.POST(data);

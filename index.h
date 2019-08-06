@@ -707,6 +707,7 @@ xhttp.onreadystatechange = function(event) {
   sys_content += "<br><b>SDK/Arduino version:</b> " + words[1] + "/" + words[2];
   sys_content += "<br><b>FW version:</b> Wifi_Angle_meter_mma8452_esp01_" + words[3] + ".bin";
   sys_content += "<br><b>ESP voltage:</b> "+ words[4] + "V";
+  sys_content += "<br><b>Loop stats:</b> "+ words[5] + "/" + words[6] + "/" + words[7] + "ms";
   document.getElementById("sysdata").innerHTML = sys_content;
  }
 };
