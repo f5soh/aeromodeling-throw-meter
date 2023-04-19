@@ -1,6 +1,6 @@
 /*
    Angle meter using a MMA8452 sensor and ESP01
-   f5soh@free.fr - 2019
+   f5soh@free.fr - 2019-2023
 
    Parts from:
    https://github.com/f5mmx/aeromodeling-throw-meter
@@ -52,6 +52,7 @@ ESP8266HTTPUpdateServer httpUpdater;
 
 // Http client
 HTTPClient http;
+WiFiClient client;
 
 /* Soft AP network parameters */
 IPAddress apIP(192, 168, 4, 1);
@@ -453,7 +454,7 @@ void sendSlaveData()
 {
   String serverURLData = "http://" + toStringIp(apIP) + "/setSlaveData";
 
-  http.begin(serverURLData);
+  http.begin(client, serverURLData);
   http.addHeader("Content-Type", "application/x-www-form-urlencoded");
   http.POST(data);
   // http.writeToStream(&Serial);
@@ -465,7 +466,7 @@ void sendToSlave(int chord, byte axis, int cmd)
   String slaveURL = "http://" + slaveDeviceIP + "/setData";
 
   http.setTimeout(200);
-  http.begin(slaveURL);
+  http.begin(client, slaveURL);
   http.addHeader("Content-Type", "application/x-www-form-urlencoded");
   http.POST("chord=" + String(int(chord)) + "&axis=" + String(axis) + "&cmd=" + String(int(cmd)));
   // http.writeToStream(&Serial);
